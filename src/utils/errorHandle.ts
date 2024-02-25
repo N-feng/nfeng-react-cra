@@ -47,15 +47,21 @@ const errorHandler = (error: error) => {
     });
     return error.data.code;
   }
-  // const { response } = error;
+  const { response } = error;
   // const errortext = codeMessage[response.status] || response.statusText;
-  // const { status } = response;
+  const { status } = response;
+  if (status === 401) {
+    notification.error({
+      message: '登录令牌过期',
+      description: '请重新登录哦！',
+    });
+    window.location.href = '/login';
+  }
   const { url } = error.config;
   const { data } = error.response;
   notification.error({
-    // message: `请求错误 ${status}: ${url}`,
+    message: `请求错误 ${status}: ${url}`,
     // description: errortext,
-    message: `请求错误 ${data.code}: ${url}`,
     description: data.msg,
   });
 };

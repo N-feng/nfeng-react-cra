@@ -2,9 +2,10 @@ import { RouteObject, createBrowserRouter } from "react-router-dom";
 import Layout from "../layouts";
 import Contact from "../pages/contact";
 import ErrorPage from "../pages/error-page";
+import ErrorRouter from "../pages/error-router";
 import LoginPage from "../pages/login";
 import UserPage from "../pages/user";
-// import { contactLoader } from "../pages/contact";
+import { Counter } from "../features/counter/Counter";
 
 export const routes: RouteObject[] = [
   {
@@ -19,18 +20,21 @@ export const routes: RouteObject[] = [
       {
         path: "contacts/:contactId",
         element: <Contact />,
-        // loader: contactLoader,
       },
       {
         path: "user",
         element: <UserPage />,
+      },
+      {
+        path: "/counter",
+        element: <Counter />,
+      },
+      {
+        path: "*",
+        element: <ErrorRouter />,
       }
     ],
   },
-  // {
-  //   path: "contacts/:contactId",
-  //   element: <Contact />,
-  // },
 ]
 
 export const router = createBrowserRouter(routes);

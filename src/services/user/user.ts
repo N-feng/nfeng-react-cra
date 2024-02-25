@@ -8,3 +8,7 @@ export async function login (
 ) {
   return request.post('login', params)
 }
+
+export async function profile () {
+  return request.get('profile')
+}

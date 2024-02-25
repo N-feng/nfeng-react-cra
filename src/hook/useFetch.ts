@@ -3,7 +3,7 @@ import { request } from '../utils/request'
 
 const API_BASE = process.env.API_URL || ''
 
-const useFetch = (endpoint: string, query: any, method?: string) => {
+const useFetch = (endpoint: string, query?: any, method?: string) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,7 +28,7 @@ const useFetch = (endpoint: string, query: any, method?: string) => {
 
     try {
       const response = await request(options);
-      setData(response.data.data);
+      setData(response.data);
       setIsLoading(false);
     } catch (error: any) {
       setError(error);

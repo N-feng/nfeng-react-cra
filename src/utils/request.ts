@@ -16,14 +16,14 @@ request.interceptors.request.use(
     // 一般会请求拦截里面加token，用于后端的验证
     const token = localStorage.getItem("token") as string
     if(token) {
-      config.headers!.Authorization = token;
+      config.headers!.Authorization = `Bearer ${token}`;
     }
 
     return config;
   },
   (err: any) => {
     // 请求错误，这里可以用全局提示框进行提示
-    return Promise.reject(err);
+    return err;
   }
 )
 
@@ -36,6 +36,6 @@ request.interceptors.response.use(
   (err: any) => {
     errorHandler(err);
     // 这里是AxiosError类型，所以一般我们只reject我们需要的响应即可
-    return Promise.reject(err.response);
+    return err.response;
   }
 );

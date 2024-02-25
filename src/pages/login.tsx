@@ -30,13 +30,6 @@ const iconStyles: CSSProperties = {
   cursor: 'pointer',
 };
 
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
 
 const Page = () => {
   const navigate = useNavigate();
@@ -96,10 +89,8 @@ const Page = () => {
           ),
         }}
         onFinish={async (values: any) => {
-          // await waitTime(2000);
           const { data } = await login(values);
           localStorage.setItem('token', data.token);
-          // message.success('提交成功');
           messageApi.open({
             type: 'success',
             content: '提交成功',
@@ -295,13 +286,13 @@ const Page = () => {
           <ProFormCheckbox noStyle name="autoLogin">
             自动登录
           </ProFormCheckbox>
-          <a
+          <button
             style={{
               float: 'right',
             }}
           >
             忘记密码
-          </a>
+          </button>
         </div>
       </LoginFormPage>
     </div>

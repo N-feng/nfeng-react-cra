@@ -7,7 +7,6 @@ import {
 export const Error = () => {
   const navigate = useNavigate();
   const error = useRouteError() as Error;
-  console.log('error: ', error);
 
   if (!isRouteErrorResponse(error)) {
       return null;
