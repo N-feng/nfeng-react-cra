@@ -7,19 +7,12 @@ import {
   ProTable,
   ProColumns,
 } from '@ant-design/pro-components';
-import { Button, Divider, Drawer, Input } from 'antd';
+import { Button, Divider, Drawer } from 'antd';
 import { useRef, useState } from 'react';
 import CreateForm from './components/CreateForm';
 import UpdateForm, { FormValueType } from './components/UpdateForm';
-import MySelect from '../../components/MySelect';
-
-const queryUserList = (params: any) => 
-  new Promise<any>((resolve, reject) => {
-  setTimeout(() => {
-    resolve(true);
-  }, 2000);
-  // reject('error');
-});
+import { queryRoleList } from '../../services/role/RoleController';
+import RoleAccess from './components/RoleAccess';
 
 /**
  * 添加节点
@@ -57,7 +50,7 @@ setTimeout(() => {
 // reject('error');
 });
 
-const UserPage = () => {
+const RolePage = () => {
   // const { data, isLoading, error, refetch } = useFetch("products", {})
   // console.log('data: ', data);
   // console.log('isLoading:console.log(); ', isLoading);
@@ -65,14 +58,22 @@ const UserPage = () => {
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});
+  const [roleAccessModalVisible, handleRoleAccessModalVisible] = useState<boolean>(false);
+  const [roleAccessValues, setRoleAccessValues] = useState({});
   const actionRef = useRef<ActionType>();
   const [row, setRow] = useState<API.UserInfo>();
   const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
   const columns: ProColumns<API.UserInfo>[] = [
     {
-      title: '名称',
-      dataIndex: 'name',
-      tip: '名称是唯一的 key',
+      title: '权限id',
+      dataIndex: 'id',
+      tip: 'id是唯一的 key',
+      hideInForm: true,
+    },
+    {
+      title: '角色名称',
+      dataIndex: 'title',
+      valueType: 'text',
       formItemProps: {
         rules: [
           {
@@ -83,38 +84,21 @@ const UserPage = () => {
       },
     },
     {
-      title: '昵称',
-      dataIndex: 'nickName',
+      title: '角色描述',
+      dataIndex: 'description',
       valueType: 'text',
     },
     {
-      title: '性别',
-      dataIndex: 'gender',
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      valueType: 'text',
       hideInForm: true,
-      valueEnum: {
-        0: { text: '男', status: 'MALE' },
-        1: { text: '女', status: 'FEMALE' },
-      },
-      renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
-        if (type === 'form') {
-          return null;
-        }
-        const stateType = form.getFieldValue('state');
-        if (stateType === 3) {
-          return <Input />;
-        }
-        if (stateType === 4) {
-          return null;
-        }
-        return (
-          <MySelect
-            {...rest}
-            state={{
-              type: stateType,
-            }}
-          />
-        );
-      },
+    },
+    {
+      title: '修改时间',
+      dataIndex: 'updatedAt',
+      valueType: 'text',
+      hideInForm: true,
     },
     {
       title: '操作',
@@ -122,6 +106,15 @@ const UserPage = () => {
       valueType: 'option',
       render: (_, record) => (
         <>
+          <button
+            onClick={() => {
+              handleRoleAccessModalVisible(true);
+              setRoleAccessValues(record);
+            }}
+          >
+            授权
+          </button>
+          <Divider type="vertical" />
           <button
             onClick={() => {
               handleUpdateModalVisible(true);
@@ -139,7 +132,7 @@ const UserPage = () => {
   return (
     <PageContainer
       header={{
-        title: '用户管理',
+        title: '角色管理',
       }}
     >
       <ProTable<API.UserInfo>
@@ -159,7 +152,7 @@ const UserPage = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          const { data, success } = await queryUserList({
+          const { data } = await queryRoleList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
@@ -168,7 +161,7 @@ const UserPage = () => {
           });
           return {
             data: data?.list || [],
-            success,
+            // success,
           };
         }}
         columns={columns}
@@ -237,7 +230,20 @@ const UserPage = () => {
           values={stepFormValues}
         />
       ) : null}
-
+      {roleAccessValues && Object.keys(roleAccessValues).length ? (
+        <RoleAccess
+          onSubmit={async (value) => {
+            handleRoleAccessModalVisible(false);
+            setRoleAccessValues({});
+          }}
+          onCancel={() => {
+            handleRoleAccessModalVisible(false);
+            setRoleAccessValues({});
+          }}
+          updateModalVisible={roleAccessModalVisible}
+          values={roleAccessValues}
+        />
+      ) : null}
       <Drawer
         width={600}
         open={!!row}
@@ -264,4 +270,4 @@ const UserPage = () => {
   );
 }
 
-export default UserPage
+export default RolePage

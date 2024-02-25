@@ -12,14 +12,7 @@ import { useRef, useState } from 'react';
 import CreateForm from './components/CreateForm';
 import UpdateForm, { FormValueType } from './components/UpdateForm';
 import MySelect from '../../components/MySelect';
-
-const queryUserList = (params: any) => 
-  new Promise<any>((resolve, reject) => {
-  setTimeout(() => {
-    resolve(true);
-  }, 2000);
-  // reject('error');
-});
+import { queryAccessList } from '../../services/access/AccessController';
 
 /**
  * 添加节点
@@ -57,7 +50,7 @@ setTimeout(() => {
 // reject('error');
 });
 
-const UserPage = () => {
+const AccessPage = () => {
   // const { data, isLoading, error, refetch } = useFetch("products", {})
   // console.log('data: ', data);
   // console.log('isLoading:console.log(); ', isLoading);
@@ -70,30 +63,31 @@ const UserPage = () => {
   const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
   const columns: ProColumns<API.UserInfo>[] = [
     {
-      title: '名称',
-      dataIndex: 'name',
-      tip: '名称是唯一的 key',
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: '名称为必填项',
-          },
-        ],
-      },
+      title: '权限id',
+      dataIndex: 'id',
+      tip: 'id是唯一的 key',
+      // formItemProps: {
+      //   rules: [
+      //     {
+      //       required: true,
+      //       message: '名称为必填项',
+      //     },
+      //   ],
+      // },
     },
     {
-      title: '昵称',
-      dataIndex: 'nickName',
+      title: '模版名称',
+      dataIndex: 'moduleName',
       valueType: 'text',
     },
     {
-      title: '性别',
-      dataIndex: 'gender',
+      title: '节点类型',
+      dataIndex: 'type',
       hideInForm: true,
       valueEnum: {
-        0: { text: '男', status: 'MALE' },
-        1: { text: '女', status: 'FEMALE' },
+        "1": { text: '模块', status: '1' },
+        "2": { text: '菜单', status: '2' },
+        "3": { text: '操作', status: '3' },
       },
       renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
         if (type === 'form') {
@@ -115,6 +109,36 @@ const UserPage = () => {
           />
         );
       },
+    },
+    {
+      title: '操作名称',
+      dataIndex: 'actionName',
+      valueType: 'text',
+    },
+    {
+      title: '跳转地址',
+      dataIndex: 'url',
+      valueType: 'text',
+    },
+    {
+      title: '模块id',
+      dataIndex: 'moduleId',
+      valueType: 'text',
+    },
+    {
+      title: '排序',
+      dataIndex: 'status',
+      valueType: 'text',
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      valueType: 'text',
+    },
+    {
+      title: '增加时间',
+      dataIndex: 'createdAt',
+      valueType: 'text',
     },
     {
       title: '操作',
@@ -139,7 +163,7 @@ const UserPage = () => {
   return (
     <PageContainer
       header={{
-        title: '用户管理',
+        title: '权限管理',
       }}
     >
       <ProTable<API.UserInfo>
@@ -159,7 +183,7 @@ const UserPage = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          const { data, success } = await queryUserList({
+          const { data } = await queryAccessList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
@@ -168,7 +192,7 @@ const UserPage = () => {
           });
           return {
             data: data?.list || [],
-            success,
+            // success,
           };
         }}
         columns={columns}
@@ -264,4 +288,4 @@ const UserPage = () => {
   );
 }
 
-export default UserPage
+export default AccessPage

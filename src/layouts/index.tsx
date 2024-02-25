@@ -1,8 +1,6 @@
 import { ProLayout } from '@ant-design/pro-layout';
-import { useState } from 'react';
 import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Button, ConfigProvider, Dropdown, notification } from 'antd';
-import useFetch from '../hook/useFetch';
 import { MenuDataItem, ProConfigProvider } from '@ant-design/pro-components';
 import {
   GithubFilled,
@@ -17,6 +15,8 @@ import {
 import SearchInput from './SearchInput';
 import { MenuCard } from './MenuCard';
 import { bgLayoutImgList } from './_defaultProp';
+import { profile } from '../services/user/user';
+import { useFetch } from '../hook/useFetch';
 
 const IconMap = {
   smile: <SmileOutlined />,
@@ -35,7 +35,7 @@ const loopMenuItem = (menus: any[]): MenuDataItem[] =>
 export default function Layout() {
   const location = useLocation();
   const token = localStorage.getItem('token');
-  const { data: { access } }: any = useFetch('profile');
+  const { data: { access } }: any = useFetch(profile);
   const defaultProps = {
     route: {
       path: '/',
@@ -108,7 +108,7 @@ export default function Layout() {
                         {
                           key: 'logout',
                           icon: <LogoutOutlined />,
-                          label: '退出登录',
+                          label: <NavLink to="/login">退出登录</NavLink>,
                         },
                       ],
                     }}

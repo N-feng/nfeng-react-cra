@@ -6,6 +6,8 @@ import ErrorRouter from "../pages/error-router";
 import LoginPage from "../pages/login";
 import UserPage from "../pages/user";
 import { Counter } from "../features/counter/Counter";
+import RolePage from "../pages/role";
+import AccessPage from "../pages/access";
 
 export const routes: RouteObject[] = [
   {
@@ -26,7 +28,7 @@ export const routes: RouteObject[] = [
         element: <UserPage />,
       },
       {
-        path: "/counter",
+        path: "counter",
         element: <Counter />,
       },
       {
@@ -35,6 +37,25 @@ export const routes: RouteObject[] = [
       }
     ],
   },
+  {
+    path: "/manager",
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "users",
+        element: <UserPage />,
+      },
+      {
+        path: "role",
+        element: <RolePage />,
+      },
+      {
+        path: "access",
+        element: <AccessPage />,
+      },
+    ]
+  }
 ]
 
 export const router = createBrowserRouter(routes);
