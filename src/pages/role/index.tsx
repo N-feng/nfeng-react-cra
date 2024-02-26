@@ -12,7 +12,7 @@ import { useRef, useState } from 'react';
 import CreateForm from './components/CreateForm';
 import UpdateForm, { FormValueType } from './components/UpdateForm';
 import { queryRoleList } from '../../services/role/RoleController';
-import RoleAccess from './components/RoleAccess';
+import TableTransfer from './components/TableTransfer';
 
 /**
  * 添加节点
@@ -231,10 +231,13 @@ const RolePage = () => {
         />
       ) : null}
       {roleAccessValues && Object.keys(roleAccessValues).length ? (
-        <RoleAccess
+        <TableTransfer
           onSubmit={async (value) => {
             handleRoleAccessModalVisible(false);
             setRoleAccessValues({});
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
           }}
           onCancel={() => {
             handleRoleAccessModalVisible(false);

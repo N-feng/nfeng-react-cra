@@ -10,5 +10,14 @@ declare namespace API {
     email?: string;
     gender?: UserGenderEnum;
   }
+
+  interface RoleInfo {
+    id?: string;
+    title?: string;
+    description?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    access?: any[];
+  }
 }
 

@@ -28,6 +28,7 @@ interface error {
     data: {
       code: number;
       msg: string;
+      message: string[];
     }
   };
   config: {
@@ -62,7 +63,7 @@ const errorHandler = (error: error) => {
   notification.error({
     message: `请求错误 ${status}: ${url}`,
     // description: errortext,
-    description: data.msg,
+    description: data.message[0] || data.msg,
   });
 };
 

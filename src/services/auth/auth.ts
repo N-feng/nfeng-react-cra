@@ -12,12 +12,3 @@ export async function login (
 export async function profile () {
   return request.get('profile')
 }
-
-export async function doAuth (
-  params: {
-    roleId: string;
-    accessIds: string[];
-  },
-) {
-  return request.post('doAuth', params)
-}
