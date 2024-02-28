@@ -1,6 +1,6 @@
 import { request } from "../../utils/request";
 
-export async function queryRoleList (
+export async function queryUserList (
   params: {
     // query
     /** keyword */
@@ -11,9 +11,5 @@ export async function queryRoleList (
     pageSize?: number;
   },
 ) {
-  return request.post('role/findAll',  params)
-}
-
-export async function profile () {
-  return request.get('profile')
+  return request.post('users/findAll',  params)
 }

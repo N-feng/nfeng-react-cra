@@ -21,6 +21,7 @@ export const useFetch = (request: Function, query?: any) => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const refetch = () => {

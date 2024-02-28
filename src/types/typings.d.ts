@@ -3,12 +3,17 @@ declare namespace API {
   
   interface UserInfo {
     id?: string;
-    name?: string;
-    /** nick */
-    nickName?: string;
-    /** email */
+    username?: string;
+    password?: string;
+    mobile?: string;
     email?: string;
+    sex?: string;
+    age?: number;
     gender?: UserGenderEnum;
+    createdAt?: string;
+    updatedAt?: string;
+    isActive?: boolean;
+    roles?: RoleInfo[]
   }
 
   interface RoleInfo {
@@ -18,6 +23,32 @@ declare namespace API {
     createdAt?: string;
     updatedAt?: string;
     access?: any[];
+  }
+
+  interface AccessInfo {
+    id?: string;
+    moduleName?: string;
+    type?: number;
+    actionName?: string;
+    url?: string;
+    moduleId?: string;
+    sort?: number;
+    description?: string;
+    status?: number;
+    createdAt?: string;
+    access?: any[];
+  }
+
+  interface Result_PageInfo_UserInfo__ {
+    success?: boolean;
+    errorMessage?: string;
+    data?: PageInfo_UserInfo_;
+  }
+
+  interface Result_string_ {
+    success?: boolean;
+    errorMessage?: string;
+    data?: string;
   }
 }
 

@@ -1,18 +1,15 @@
 import {
   ActionType,
-  FooterToolbar,
   PageContainer,
-  ProDescriptions,
-  ProDescriptionsItemProps,
   ProTable,
   ProColumns,
+  TableDropdown,
 } from '@ant-design/pro-components';
-import { Button, Divider, Drawer, Input } from 'antd';
+import { Button, Input, message } from 'antd';
 import { useRef, useState } from 'react';
-import CreateForm from './components/CreateForm';
-import UpdateForm, { FormValueType } from './components/UpdateForm';
-import MySelect from '../../components/MySelect';
-import { queryAccessList } from '../../services/access/AccessController';
+import { deleteAccess, queryAccessList } from '../../services/access/AccessController';
+import { MyModalForm } from '../../components/MyModalForm';
+import { MySelect } from '../../components/MySelect';
 
 /**
  * 添加节点
@@ -30,7 +27,7 @@ const handleAdd = async (fields: API.UserInfo) =>
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: FormValueType) =>
+const handleUpdate = async (fields: API.AccessInfo) =>
 new Promise<any>((resolve, reject) => {
 setTimeout(() => {
   resolve(true);
@@ -42,38 +39,37 @@ setTimeout(() => {
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = (params: any) => 
-new Promise<any>((resolve, reject) => {
-setTimeout(() => {
-  resolve(true);
-}, 2000);
-// reject('error');
-});
+const handleRemove = async (selectedRows: API.AccessInfo[]) => {
+  console.log('selectedRows: ', selectedRows);
+  const hide = message.loading('正在删除');
+  if (!selectedRows) return true;
+  try {
+    await deleteAccess({
+      id: selectedRows.find((row) => row.id)?.id || '',
+    });
+    hide();
+    message.success('删除成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('删除失败，请重试');
+    return false;
+  }
+};
 
 const AccessPage = () => {
-  // const { data, isLoading, error, refetch } = useFetch("products", {})
-  // console.log('data: ', data);
-  // console.log('isLoading:console.log(); ', isLoading);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+  const [updateFormValues, setUpdateFormValues] = useState({});
   const actionRef = useRef<ActionType>();
-  const [row, setRow] = useState<API.UserInfo>();
-  const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
   const columns: ProColumns<API.UserInfo>[] = [
     {
       title: '权限id',
       dataIndex: 'id',
       tip: 'id是唯一的 key',
-      // formItemProps: {
-      //   rules: [
-      //     {
-      //       required: true,
-      //       message: '名称为必填项',
-      //     },
-      //   ],
-      // },
+      hideInForm: true,
+      search: false,
     },
     {
       title: '模版名称',
@@ -83,11 +79,10 @@ const AccessPage = () => {
     {
       title: '节点类型',
       dataIndex: 'type',
-      hideInForm: true,
       valueEnum: {
-        "1": { text: '模块', status: '1' },
-        "2": { text: '菜单', status: '2' },
-        "3": { text: '操作', status: '3' },
+        1: { text: '模块', status: '1' },
+        2: { text: '菜单', status: '2' },
+        3: { text: '操作', status: '3' },
       },
       renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
         if (type === 'form') {
@@ -103,9 +98,6 @@ const AccessPage = () => {
         return (
           <MySelect
             {...rest}
-            state={{
-              type: stateType,
-            }}
           />
         );
       },
@@ -129,16 +121,19 @@ const AccessPage = () => {
       title: '排序',
       dataIndex: 'status',
       valueType: 'text',
+      search: false,
     },
     {
       title: '状态',
-      dataIndex: 'status',
+      dataIndex: 'sort',
       valueType: 'text',
+      search: false,
     },
     {
       title: '增加时间',
       dataIndex: 'createdAt',
       valueType: 'text',
+      search: false,
     },
     {
       title: '操作',
@@ -146,16 +141,28 @@ const AccessPage = () => {
       valueType: 'option',
       render: (_, record) => (
         <>
-          <button
+          <Button
+            type='link'
             onClick={() => {
               handleUpdateModalVisible(true);
-              setStepFormValues(record);
+              setUpdateFormValues(record);
             }}
           >
-            配置
-          </button>
-          <Divider type="vertical" />
-          <button>订阅警报</button>
+            编辑
+          </Button>
+          <TableDropdown
+            key="more"
+            onSelect={async (key) => {
+              if (key === 'delete') {
+                await handleRemove([record])
+                actionRef.current?.reloadAndRest?.();
+              }
+            }}
+            menus={[
+              // { key: 'copy', name: '复制' },
+              { key: 'delete', name: '删除' },
+            ]}
+          />
         </>
       ),
     },
@@ -166,7 +173,7 @@ const AccessPage = () => {
         title: '权限管理',
       }}
     >
-      <ProTable<API.UserInfo>
+      <ProTable<API.AccessInfo>
         headerTitle="查询表格"
         actionRef={actionRef}
         rowKey="id"
@@ -183,71 +190,41 @@ const AccessPage = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          const { data } = await queryAccessList({
+          return await queryAccessList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
             sorter,
             filter,
           });
-          return {
-            data: data?.list || [],
-            // success,
-          };
         }}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
         }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              已选择{' '}
-              <button style={{ fontWeight: 600 }}>{selectedRowsState.length}</button>{' '}
-              项&nbsp;&nbsp;
-            </div>
+      <MyModalForm
+        onSubmit={async (value: any) => {
+          const success = await handleAdd(value);
+          if (success) {
+            handleModalVisible(false);
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
           }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            批量删除
-          </Button>
-          <Button type="primary">批量审批</Button>
-        </FooterToolbar>
-      )}
-      <CreateForm
+        }}
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-      >
-        <ProTable
-          onSubmit={async (value) => {
-            const success = await handleAdd(value);
-            if (success) {
-              handleModalVisible(false);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          rowKey="id"
-          type="form"
-          columns={columns}
-        />
-      </CreateForm>
-      {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
-          onSubmit={async (value) => {
+        columns={columns}
+      />
+      {updateFormValues && Object.keys(updateFormValues).length ? (
+        <MyModalForm
+          onSubmit={async (value: any) => {
             const success = await handleUpdate(value);
             if (success) {
               handleUpdateModalVisible(false);
-              setStepFormValues({});
+              setUpdateFormValues({});
               if (actionRef.current) {
                 actionRef.current.reload();
               }
@@ -255,35 +232,13 @@ const AccessPage = () => {
           }}
           onCancel={() => {
             handleUpdateModalVisible(false);
-            setStepFormValues({});
+            setUpdateFormValues({});
           }}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
+          modalVisible={updateModalVisible}
+          columns={columns}
+          values={updateFormValues}
         />
       ) : null}
-
-      <Drawer
-        width={600}
-        open={!!row}
-        onClose={() => {
-          setRow(undefined);
-        }}
-        closable={false}
-      >
-        {row?.name && (
-          <ProDescriptions<API.UserInfo>
-            column={2}
-            title={row?.name}
-            request={async () => ({
-              data: row || {},
-            })}
-            params={{
-              id: row?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<API.UserInfo>[]}
-          />
-        )}
-      </Drawer>
     </PageContainer>
   );
 }

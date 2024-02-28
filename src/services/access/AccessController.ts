@@ -1,5 +1,20 @@
 import { request } from "../../utils/request";
 
+export async function deleteAccess (
+  params: {
+    // path
+    /** userId */
+    id?: string;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<API.Result_string_>('access/remove', {
+    method: 'DELETE',
+    params: { ...params },
+    ...(options || {}),
+  });
+}
+
 export async function queryAccessList (
   params: {
     // query
@@ -12,8 +27,4 @@ export async function queryAccessList (
   },
 ) {
   return request.post('access/findAll', params)
-}
-
-export async function profile () {
-  return request.get('profile')
 }

@@ -4,7 +4,7 @@ import type { GetProp, TableColumnsType, TableProps, TransferProps } from 'antd'
 import difference from 'lodash/difference';
 import { useFetch } from "../../../hook/useFetch";
 import { queryAccessList } from "../../../services/access/AccessController";
-import { doAuth } from "../../../services/user/user";
+import { doAuth } from "../../../services/auth/AuthController";
 
 type TransferItem = GetProp<TransferProps, 'dataSource'>[number];
 type TableRowSelection<T extends object> = TableProps<T>['rowSelection'];
@@ -126,12 +126,12 @@ const App: React.FC<TableTransProps> = (props: any) => {
 
   const originTargetKeys = (values?.access || []).map((item: any) => item.id)
 
-  const { data: { list } }: any = useFetch(queryAccessList)
-  const dataSource = (list || []).map((item: any) => ({ ...item, disabled: false, key: item.id }))
+  const { data }: any = useFetch(queryAccessList)
+  const dataSource = (data || []).map((item: any) => ({ ...item, disabled: false, key: item.id }))
 
   const [targetKeys, setTargetKeys] = useState<string[]>(originTargetKeys);
   const [disabled, setDisabled] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch, setShowSearch] = useState(true);
 
   const onChange = (nextTargetKeys: string[]) => {
     setTargetKeys(nextTargetKeys);
@@ -159,6 +159,12 @@ const App: React.FC<TableTransProps> = (props: any) => {
     }
   };
 
+  const filterOption = (inputValue: any, item: any) => {
+    return (item.moduleName || '').indexOf(inputValue) !== -1 
+      || (item.actionName || '').indexOf(inputValue) !== -1
+  }
+            
+
   return (
     <>
       <Modal
@@ -173,13 +179,12 @@ const App: React.FC<TableTransProps> = (props: any) => {
         <TableTransfer
           dataSource={dataSource}
           titles={['所有权限', '已有权限']}
+          // locale={{ searchPlaceholder: '请输入模版名称' }}
           targetKeys={targetKeys}
           disabled={disabled}
           showSearch={showSearch}
           onChange={onChange}
-          filterOption={(inputValue, item) =>
-            item.title!.indexOf(inputValue) !== -1 || item.tag.indexOf(inputValue) !== -1
-          }
+          filterOption={filterOption}
           leftColumns={leftTableColumns}
           rightColumns={rightTableColumns}
         />

@@ -1,25 +1,14 @@
 import {
   ActionType,
-  FooterToolbar,
   PageContainer,
-  ProDescriptions,
-  ProDescriptionsItemProps,
   ProTable,
   ProColumns,
+  TableDropdown,
 } from '@ant-design/pro-components';
-import { Button, Divider, Drawer, Input } from 'antd';
+import { Button } from 'antd';
 import { useRef, useState } from 'react';
-import CreateForm from './components/CreateForm';
-import UpdateForm, { FormValueType } from './components/UpdateForm';
-import MySelect from '../../components/MySelect';
-
-const queryUserList = (params: any) => 
-  new Promise<any>((resolve, reject) => {
-  setTimeout(() => {
-    resolve(true);
-  }, 2000);
-  // reject('error');
-});
+import { MyModalForm } from '../../components/MyModalForm';
+import { queryUserList } from '../../services/user/UserController';
 
 /**
  * 添加节点
@@ -37,7 +26,7 @@ const handleAdd = async (fields: API.UserInfo) =>
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: FormValueType) =>
+const handleUpdate = async (fields: API.UserInfo) =>
 new Promise<any>((resolve, reject) => {
 setTimeout(() => {
   resolve(true);
@@ -58,20 +47,16 @@ setTimeout(() => {
 });
 
 const UserPage = () => {
-  // const { data, isLoading, error, refetch } = useFetch("products", {})
-  // console.log('data: ', data);
-  // console.log('isLoading:console.log(); ', isLoading);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+  const [updateFormValues, setUpdateFormValues] = useState({});
   const actionRef = useRef<ActionType>();
-  const [row, setRow] = useState<API.UserInfo>();
-  const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
+  // const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
   const columns: ProColumns<API.UserInfo>[] = [
     {
-      title: '名称',
-      dataIndex: 'name',
+      title: '用户名称',
+      dataIndex: 'username',
       tip: '名称是唯一的 key',
       formItemProps: {
         rules: [
@@ -83,55 +68,71 @@ const UserPage = () => {
       },
     },
     {
-      title: '昵称',
-      dataIndex: 'nickName',
+      title: '用户密码',
+      dataIndex: 'password',
+      valueType: 'text',
+      hideInForm: true,
+      search: false,
+    },
+    {
+      title: '用户电话',
+      dataIndex: 'mobile',
       valueType: 'text',
     },
     {
-      title: '性别',
-      dataIndex: 'gender',
-      hideInForm: true,
-      valueEnum: {
-        0: { text: '男', status: 'MALE' },
-        1: { text: '女', status: 'FEMALE' },
-      },
-      renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
-        if (type === 'form') {
-          return null;
-        }
-        const stateType = form.getFieldValue('state');
-        if (stateType === 3) {
-          return <Input />;
-        }
-        if (stateType === 4) {
-          return null;
-        }
-        return (
-          <MySelect
-            {...rest}
-            state={{
-              type: stateType,
-            }}
-          />
-        );
-      },
+      title: '用户邮箱',
+      dataIndex: 'email',
+      valueType: 'text',
     },
+    // {
+    //   title: '用户角色',
+    //   dataIndex: 'roles',
+    //   hideInForm: true,
+    //   renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
+    //     if (type === 'form') {
+    //       return null;
+    //     }
+    //     const stateType = form.getFieldValue('state');
+    //     if (stateType === 3) {
+    //       return <Input />;
+    //     }
+    //     if (stateType === 4) {
+    //       return null;
+    //     }
+    //     return (
+    //       <MySelect
+    //         {...rest}
+    //       />
+    //     );
+    //   },
+    // },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => (
         <>
-          <button
+          <Button
+            type='link'
             onClick={() => {
               handleUpdateModalVisible(true);
-              setStepFormValues(record);
+              setUpdateFormValues(record);
             }}
           >
-            配置
-          </button>
-          <Divider type="vertical" />
-          <button>订阅警报</button>
+            编辑
+          </Button>
+          <TableDropdown
+            key="more"
+            onSelect={async (key) => {
+              if (key === 'delete') {
+                await handleRemove([record])
+                actionRef.current?.reloadAndRest?.();
+              }
+            }}
+            menus={[
+              { key: 'delete', name: '删除' },
+            ]}
+          />
         </>
       ),
     },
@@ -159,24 +160,20 @@ const UserPage = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          const { data, success } = await queryUserList({
+          return await queryUserList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
             sorter,
             filter,
           });
-          return {
-            data: data?.list || [],
-            success,
-          };
         }}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
-        }}
+        // rowSelection={{
+        //   onChange: (_, selectedRows) => setSelectedRows(selectedRows),
+        // }}
       />
-      {selectedRowsState?.length > 0 && (
+      {/* {selectedRowsState?.length > 0 && (
         <FooterToolbar
           extra={
             <div>
@@ -197,33 +194,28 @@ const UserPage = () => {
           </Button>
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
-      )}
-      <CreateForm
+      )} */}
+      <MyModalForm
+        onSubmit={async (value: any) => {
+          const success = await handleAdd(value);
+          if (success) {
+            handleModalVisible(false);
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-      >
-        <ProTable
-          onSubmit={async (value) => {
-            const success = await handleAdd(value);
-            if (success) {
-              handleModalVisible(false);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          rowKey="id"
-          type="form"
-          columns={columns}
-        />
-      </CreateForm>
-      {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
-          onSubmit={async (value) => {
+        columns={columns}
+      />
+      {updateFormValues && Object.keys(updateFormValues).length ? (
+        <MyModalForm
+          onSubmit={async (value: any) => {
             const success = await handleUpdate(value);
             if (success) {
               handleUpdateModalVisible(false);
-              setStepFormValues({});
+              setUpdateFormValues({});
               if (actionRef.current) {
                 actionRef.current.reload();
               }
@@ -231,35 +223,13 @@ const UserPage = () => {
           }}
           onCancel={() => {
             handleUpdateModalVisible(false);
-            setStepFormValues({});
+            setUpdateFormValues({});
           }}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
+          values={updateFormValues}
+          modalVisible={updateModalVisible}
+          columns={columns}
         />
       ) : null}
-
-      <Drawer
-        width={600}
-        open={!!row}
-        onClose={() => {
-          setRow(undefined);
-        }}
-        closable={false}
-      >
-        {row?.name && (
-          <ProDescriptions<API.UserInfo>
-            column={2}
-            title={row?.name}
-            request={async () => ({
-              data: row || {},
-            })}
-            params={{
-              id: row?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<API.UserInfo>[]}
-          />
-        )}
-      </Drawer>
     </PageContainer>
   );
 }

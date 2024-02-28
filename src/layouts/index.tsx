@@ -15,8 +15,8 @@ import {
 import SearchInput from './SearchInput';
 import { MenuCard } from './MenuCard';
 import { bgLayoutImgList } from './_defaultProp';
-import { profile } from '../services/user/user';
 import { useFetch } from '../hook/useFetch';
+import { profile } from '../services/auth/AuthController';
 
 const IconMap = {
   smile: <SmileOutlined />,
