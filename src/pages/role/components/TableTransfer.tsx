@@ -3,8 +3,8 @@ import { useState } from "react";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from 'antd';
 import difference from 'lodash/difference';
 import { useFetch } from "../../../hook/useFetch";
-import { queryAccessList } from "../../../services/access/AccessController";
-import { doAuth } from "../../../services/auth/AuthController";
+import { queryAccessList } from "../../../api/AccessController";
+import { doAuth } from "../../../api/AuthController";
 
 type TransferItem = GetProp<TransferProps, 'dataSource'>[number];
 type TableRowSelection<T extends object> = TableProps<T>['rowSelection'];

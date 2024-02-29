@@ -37,6 +37,18 @@ interface error {
 }
 
 /**
+ * 响应处理程序
+ */
+const responseHandler = (data: any) => {
+  if (data.code !== 200) {
+    notification.error({
+      message: `请求错误 ${data.code}`,
+      description: data.msg,
+    });
+  }
+}
+
+/**
  * 异常处理程序
  */
 const errorHandler = (error: error) => {
@@ -56,15 +68,18 @@ const errorHandler = (error: error) => {
       message: '登录令牌过期',
       description: '请重新登录哦！',
     });
-    window.location.href = '/login';
+    // window.location.href = '/login';
   }
   const { url } = error.config;
   const { data } = error.response;
   notification.error({
     message: `请求错误 ${status}: ${url}`,
     // description: errortext,
-    description: data.message[0] || data.msg,
+    description: data.message?.[0] || data.msg,
   });
 };
 
-export default errorHandler;
+export {
+  responseHandler,
+  errorHandler
+};

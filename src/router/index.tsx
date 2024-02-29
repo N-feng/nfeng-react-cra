@@ -8,6 +8,7 @@ import UserPage from "../pages/user";
 import { Counter } from "../features/counter/Counter";
 import RolePage from "../pages/role";
 import AccessPage from "../pages/access";
+import HomePage from "../pages/home";
 
 export const routes: RouteObject[] = [
   {
@@ -19,6 +20,10 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "welcome",
+        element: <HomePage />,
+      },
       {
         path: "contacts/:contactId",
         element: <Contact />,

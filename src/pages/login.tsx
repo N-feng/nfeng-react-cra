@@ -19,7 +19,7 @@ import type { TabsProps } from 'antd';
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { login } from '../services/auth/AuthController';
+import { login } from '../api/AuthController';
 
 type LoginType = 'phone' | 'account';
 
@@ -95,7 +95,7 @@ const Page = () => {
             type: 'success',
             content: '提交成功',
           });
-          navigate('/user');
+          navigate('/welcome');
         }}
         actions={
           <div

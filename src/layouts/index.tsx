@@ -16,7 +16,7 @@ import SearchInput from './SearchInput';
 import { MenuCard } from './MenuCard';
 import { bgLayoutImgList } from './_defaultProp';
 import { useFetch } from '../hook/useFetch';
-import { profile } from '../services/auth/AuthController';
+import { profile } from '../api/AuthController';
 
 const IconMap = {
   smile: <SmileOutlined />,
@@ -35,7 +35,7 @@ const loopMenuItem = (menus: any[]): MenuDataItem[] =>
 export default function Layout() {
   const location = useLocation();
   const token = localStorage.getItem('token');
-  const { data: { access } }: any = useFetch(profile);
+  const { data: { username, access } }: any = useFetch(profile);
   const defaultProps = {
     route: {
       path: '/',
@@ -99,7 +99,7 @@ export default function Layout() {
             avatarProps={{
               src: 'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
               size: 'small',
-              title: '七妮妮',
+              title: username || '七妮妮',
               render: (props, dom) => {
                 return (
                   <Dropdown

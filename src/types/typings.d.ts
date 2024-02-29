@@ -13,7 +13,6 @@ declare namespace API {
     createdAt?: string;
     updatedAt?: string;
     isActive?: boolean;
-    roles?: RoleInfo[]
   }
 
   interface RoleInfo {
@@ -43,6 +42,12 @@ declare namespace API {
     success?: boolean;
     errorMessage?: string;
     data?: PageInfo_UserInfo_;
+  }
+
+  interface Result_UserInfo_ {
+    success?: boolean;
+    errorMessage?: string;
+    data?: UserInfo;
   }
 
   interface Result_string_ {

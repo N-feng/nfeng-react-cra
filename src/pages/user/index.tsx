@@ -5,59 +5,107 @@ import {
   ProColumns,
   TableDropdown,
 } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { useRef, useState } from 'react';
-import { MyModalForm } from '../../components/MyModalForm';
-import { queryUserList } from '../../services/user/UserController';
+import { addUser, deleteUser, modifyUser, queryUserList } from '../../api/UserController';
+import UpdateForm from './components/UpdateForm';
+import CreateForm from './components/CreateForm';
+import { useFetch } from '../../hook/useFetch';
+import { queryRoleList } from '../../api/RoleController';
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.UserInfo) =>
-  new Promise<any>((resolve, reject) => {
-  setTimeout(() => {
-    resolve(true);
-  }, 2000);
-  // reject('error');
-});
+const handleAdd = async (fields: API.UserInfo) => {
+  const hide = message.loading('正在添加');
+  try {
+    await addUser({ ...fields });
+    hide();
+    message.success('添加成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('添加失败请重试！');
+    return false;
+  }
+};
 
 /**
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: API.UserInfo) =>
-new Promise<any>((resolve, reject) => {
-setTimeout(() => {
-  resolve(true);
-}, 2000);
-// reject('error');
-});
+const handleUpdate = async (fields: API.UserInfo) => {
+  console.log('fields: ', fields);
+  const hide = message.loading('正在配置');
+  try {
+    await modifyUser(
+      {
+        userId: fields.id || '',
+      },
+      {
+        // name: fields.name || '',
+        // nickName: fields.nickName || '',
+        email: fields.email || '',
+        ...fields,
+      },
+    );
+    hide();
+
+    message.success('配置成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('配置失败请重试！');
+    return false;
+  }
+};
 
 /**
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = (params: any) => 
-new Promise<any>((resolve, reject) => {
-setTimeout(() => {
-  resolve(true);
-}, 2000);
-// reject('error');
-});
+const handleRemove = async (selectedRows: API.UserInfo[]) => {
+  const hide = message.loading('正在删除');
+  if (!selectedRows) return true;
+  try {
+    await deleteUser({
+      id: selectedRows.find((row) => row.id)?.id || '',
+    });
+    hide();
+    message.success('删除成功，即将刷新');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('删除失败，请重试');
+    return false;
+  }
+};
 
 const UserPage = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
-  const [updateFormValues, setUpdateFormValues] = useState({});
+  const [stepFormValues, setStepFormValues] = useState({});
+  const [createFormValues, setCreateFormValues] = useState({});
+  const [formTypeValues, setFormTypeValues] = useState(1); // 1新增 2修改
+  const { data: { list: roleList = [] } }: any = useFetch(queryRoleList);
+  // console.log('roleList: ', roleList);
   const actionRef = useRef<ActionType>();
   // const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
   const columns: ProColumns<API.UserInfo>[] = [
     {
+      title: '用户ID',
+      dataIndex: 'id',
+      tip: 'ID是唯一的 key',
+      fieldProps: {
+        disabled: true,
+      }
+    },
+    {
       title: '用户名称',
       dataIndex: 'username',
-      tip: '名称是唯一的 key',
+      valueType: 'text',
       formItemProps: {
         rules: [
           {
@@ -71,8 +119,9 @@ const UserPage = () => {
       title: '用户密码',
       dataIndex: 'password',
       valueType: 'text',
-      hideInForm: true,
+      // hideInForm: true,
       search: false,
+      hideInTable: true,
     },
     {
       title: '用户电话',
@@ -84,28 +133,42 @@ const UserPage = () => {
       dataIndex: 'email',
       valueType: 'text',
     },
-    // {
-    //   title: '用户角色',
-    //   dataIndex: 'roles',
-    //   hideInForm: true,
-    //   renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
-    //     if (type === 'form') {
-    //       return null;
-    //     }
-    //     const stateType = form.getFieldValue('state');
-    //     if (stateType === 3) {
-    //       return <Input />;
-    //     }
-    //     if (stateType === 4) {
-    //       return null;
-    //     }
-    //     return (
-    //       <MySelect
-    //         {...rest}
-    //       />
-    //     );
-    //   },
-    // },
+    {
+      title: '用户角色',
+      dataIndex: 'roleIds',
+      ellipsis: true,
+      valueType: 'select',
+      fieldProps: {
+        // options: [
+        //   { label: '模块', value: 1 },
+        //   { label: '菜单', value: 2 },
+        //   { label: '操作', value: 3 },
+        // ],
+        mode: 'multiple',
+        fieldNames: {
+          label: 'title',
+          value: 'id',
+        },
+        options: roleList,
+      },
+      // renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
+      //   if (type === 'form') {
+      //     return null;
+      //   }
+      //   const stateType = form.getFieldValue('state');
+      //   if (stateType === 3) {
+      //     return <Input />;
+      //   }
+      //   if (stateType === 4) {
+      //     return null;
+      //   }
+      //   return (
+      //     <MySelect
+      //       {...rest}
+      //     />
+      //   );
+      // },
+    },
     {
       title: '操作',
       dataIndex: 'option',
@@ -115,8 +178,9 @@ const UserPage = () => {
           <Button
             type='link'
             onClick={() => {
-              handleUpdateModalVisible(true);
-              setUpdateFormValues(record);
+              handleModalVisible(true);
+              setCreateFormValues(record);
+              setFormTypeValues(2);
             }}
           >
             编辑
@@ -154,19 +218,27 @@ const UserPage = () => {
           <Button
             key="1"
             type="primary"
-            onClick={() => handleModalVisible(true)}
+            onClick={() => {
+              handleModalVisible(true)
+              setCreateFormValues({})
+              setFormTypeValues(1)
+            }}
           >
             新建
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          return await queryUserList({
+          const { data } = await queryUserList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
             sorter,
             filter,
           });
+          return {
+            data: data?.list || [],
+            // success,
+          };
         }}
         columns={columns}
         // rowSelection={{
@@ -195,27 +267,47 @@ const UserPage = () => {
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )} */}
-      <MyModalForm
-        onSubmit={async (value: any) => {
-          const success = await handleAdd(value);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
+      <CreateForm
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-        columns={columns}
-      />
-      {updateFormValues && Object.keys(updateFormValues).length ? (
-        <MyModalForm
+        title={formTypeValues === 1 ? '新增用户' : '编辑用户'}
+      >
+        <ProTable<API.UserInfo, API.UserInfo>
+          onSubmit={async (value: any) => {
+            console.log('value: ', value);
+            const success = 
+              formTypeValues === 1 ? 
+                await handleAdd(value) : 
+                await handleUpdate(value);
+            if (success) {
+              handleModalVisible(false);
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          rowKey="key"
+          type="form"
+          columns={columns}
+          form={{
+            initialValues: createFormValues,
+            submitter: {
+              resetButtonProps: {
+                style: {
+                  display: 'none',
+                },
+              },
+            },
+          }}
+        />
+      </CreateForm>
+      {stepFormValues && Object.keys(stepFormValues).length ? (
+        <UpdateForm
           onSubmit={async (value: any) => {
             const success = await handleUpdate(value);
             if (success) {
               handleUpdateModalVisible(false);
-              setUpdateFormValues({});
+              setStepFormValues({});
               if (actionRef.current) {
                 actionRef.current.reload();
               }
@@ -223,11 +315,10 @@ const UserPage = () => {
           }}
           onCancel={() => {
             handleUpdateModalVisible(false);
-            setUpdateFormValues({});
+            setStepFormValues({});
           }}
-          values={updateFormValues}
-          modalVisible={updateModalVisible}
-          columns={columns}
+          updateModalVisible={updateModalVisible}
+          values={stepFormValues}
         />
       ) : null}
     </PageContainer>

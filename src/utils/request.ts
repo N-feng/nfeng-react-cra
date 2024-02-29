@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { AxiosRequestConfig, InternalAxiosRequestConfig, AxiosResponse } from "axios";
-import errorHandler from './errorHandle'
+import { errorHandler, responseHandler } from './errorHandle'
 
 const UMI_APP_API_URL = process.env.UMI_APP_API_URL
 
@@ -31,6 +31,7 @@ request.interceptors.response.use(
   (res: AxiosResponse) => {
     // 直接返回res，当然你也可以只返回res.data
     // 系统如果有自定义code也可以在这里处理
+    responseHandler(res.data);
     return res.data;
   },
   (err: any) => {

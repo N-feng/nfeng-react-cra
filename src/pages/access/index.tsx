@@ -7,9 +7,10 @@ import {
 } from '@ant-design/pro-components';
 import { Button, Input, message } from 'antd';
 import { useRef, useState } from 'react';
-import { deleteAccess, queryAccessList } from '../../services/access/AccessController';
-import { MyModalForm } from '../../components/MyModalForm';
+import { deleteAccess, queryAccessList } from '../../api/AccessController';
 import { MySelect } from '../../components/MySelect';
+import CreateForm from './components/CreateForm';
+import UpdateForm from './components/UpdateForm';
 
 /**
  * 添加节点
@@ -61,7 +62,8 @@ const AccessPage = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
-  const [updateFormValues, setUpdateFormValues] = useState({});
+  const [stepFormValues, setStepFormValues] = useState({});
+  const [createFormValues, setCreateFormValues] = useState({});
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<API.UserInfo>[] = [
     {
@@ -79,15 +81,24 @@ const AccessPage = () => {
     {
       title: '节点类型',
       dataIndex: 'type',
-      valueEnum: {
-        1: { text: '模块', status: '1' },
-        2: { text: '菜单', status: '2' },
-        3: { text: '操作', status: '3' },
+      // valueEnum: {
+      //   1: { text: '模块', status: '1' },
+      //   2: { text: '菜单', status: '2' },
+      //   3: { text: '操作', status: '3' },
+      // },
+      valueType: 'select',
+      fieldProps: {
+        options: [
+          { label: '模块', value: 1 },
+          { label: '菜单', value: 2 },
+          { label: '操作', value: 3 },
+        ]
       },
       renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
-        if (type === 'form') {
-          return null;
-        }
+        // console.log('rest: ', rest);
+        // if (type === 'form') {
+        //   return null;
+        // }
         const stateType = form.getFieldValue('state');
         if (stateType === 3) {
           return <Input />;
@@ -133,6 +144,7 @@ const AccessPage = () => {
       title: '增加时间',
       dataIndex: 'createdAt',
       valueType: 'text',
+      hideInForm: true,
       search: false,
     },
     {
@@ -144,8 +156,8 @@ const AccessPage = () => {
           <Button
             type='link'
             onClick={() => {
-              handleUpdateModalVisible(true);
-              setUpdateFormValues(record);
+              handleModalVisible(true);
+              setCreateFormValues(record);
             }}
           >
             编辑
@@ -184,19 +196,26 @@ const AccessPage = () => {
           <Button
             key="1"
             type="primary"
-            onClick={() => handleModalVisible(true)}
+            onClick={() => {
+              handleModalVisible(true)
+              setCreateFormValues({})
+            }}
           >
             新建
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          return await queryAccessList({
+          const { data } = await queryAccessList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
             sorter,
             filter,
           });
+          return {
+            data: data?.list || [],
+            // success,
+          };
         }}
         columns={columns}
         pagination={{
@@ -204,27 +223,42 @@ const AccessPage = () => {
           showSizeChanger: true,
         }}
       />
-      <MyModalForm
-        onSubmit={async (value: any) => {
-          const success = await handleAdd(value);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
+      <CreateForm
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-        columns={columns}
-      />
-      {updateFormValues && Object.keys(updateFormValues).length ? (
-        <MyModalForm
+      >
+        <ProTable<API.AccessInfo, API.AccessInfo>
+          onSubmit={async (value: any) => {
+            const success = await handleAdd(value);
+            if (success) {
+              handleModalVisible(false);
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          rowKey="id"
+          type="form"
+          columns={columns}
+          form={{
+            initialValues: createFormValues,
+            submitter: {
+              resetButtonProps: {
+                style: {
+                  display: 'none',
+                },
+              },
+            },
+          }}
+        />
+      </CreateForm>
+      {stepFormValues && Object.keys(stepFormValues).length ? (
+        <UpdateForm
           onSubmit={async (value: any) => {
             const success = await handleUpdate(value);
             if (success) {
               handleUpdateModalVisible(false);
-              setUpdateFormValues({});
+              setStepFormValues({});
               if (actionRef.current) {
                 actionRef.current.reload();
               }
@@ -232,11 +266,10 @@ const AccessPage = () => {
           }}
           onCancel={() => {
             handleUpdateModalVisible(false);
-            setUpdateFormValues({});
+            setStepFormValues({});
           }}
-          modalVisible={updateModalVisible}
-          columns={columns}
-          values={updateFormValues}
+          updateModalVisible={updateModalVisible}
+          values={stepFormValues}
         />
       ) : null}
     </PageContainer>

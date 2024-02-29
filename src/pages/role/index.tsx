@@ -7,9 +7,10 @@ import {
 } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { useRef, useState } from 'react';
-import { queryRoleList } from '../../services/role/RoleController';
+import { queryRoleList } from '../../api/RoleController';
 import TableTransfer from './components/TableTransfer';
-import { MyModalForm } from '../../components/MyModalForm';
+import UpdateForm from './components/UpdateForm';
+import CreateForm from './components/CreateForm';
 
 /**
  * 添加节点
@@ -51,7 +52,8 @@ const RolePage = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
-  const [updateFormValues, setUpdateFormValues] = useState({});
+  const [stepFormValues, setStepFormValues] = useState({});
+  const [createFormValues, setCreateFormValues] = useState({});
   const [roleAccessModalVisible, handleRoleAccessModalVisible] = useState<boolean>(false);
   const [roleAccessValues, setRoleAccessValues] = useState({});
   const actionRef = useRef<ActionType>();
@@ -105,8 +107,8 @@ const RolePage = () => {
           <Button
             type='link'
             onClick={() => {
-              handleUpdateModalVisible(true);
-              setUpdateFormValues(record);
+              handleModalVisible(true);
+              setCreateFormValues(record);
             }}
           >
             编辑
@@ -149,19 +151,26 @@ const RolePage = () => {
           <Button
             key="1"
             type="primary"
-            onClick={() => handleModalVisible(true)}
+            onClick={() => {
+              handleModalVisible(true)
+              setCreateFormValues({})
+            }}
           >
             新建
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          return await queryRoleList({
+          const { data } = await queryRoleList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
             sorter,
             filter,
           });
+          return {
+            data: data?.list || [],
+            // success,
+          };
         }}
         columns={columns}
         // rowSelection={{
@@ -194,29 +203,35 @@ const RolePage = () => {
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )} */}
-      <MyModalForm
-        type="create"
-        onSubmit={async (value: any) => {
-          const success = await handleAdd(value);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
+      <CreateForm
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-        columns={columns}
-      />
-      {updateFormValues && Object.keys(updateFormValues).length ? (
-        <MyModalForm
-          type="update"
+      >
+        <ProTable<API.RoleInfo, API.RoleInfo>
+          onSubmit={async (value: any) => {
+            const success = await handleAdd(value);
+            if (success) {
+              handleModalVisible(false);
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          rowKey="key"
+          type="form"
+          columns={columns}
+          form={{
+            initialValues: createFormValues,
+          }}
+        />
+      </CreateForm>
+      {stepFormValues && Object.keys(stepFormValues).length ? (
+        <UpdateForm
           onSubmit={async (value: any) => {
             const success = await handleUpdate(value);
             if (success) {
               handleUpdateModalVisible(false);
-              setUpdateFormValues({});
+              setStepFormValues({});
               if (actionRef.current) {
                 actionRef.current.reload();
               }
@@ -224,11 +239,10 @@ const RolePage = () => {
           }}
           onCancel={() => {
             handleUpdateModalVisible(false);
-            setUpdateFormValues({});
+            setStepFormValues({});
           }}
-          modalVisible={updateModalVisible}
-          values={updateFormValues}
-          columns={columns}
+          updateModalVisible={updateModalVisible}
+          values={stepFormValues}
         />
       ) : null}
       {roleAccessValues && Object.keys(roleAccessValues).length ? (
