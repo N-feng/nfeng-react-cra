@@ -14,6 +14,39 @@ export async function queryAccessList (
   return request.post('access/findAll', params)
 }
 
+export async function addAccess(
+  body?: API.AccessInfo,
+  options?: { [key: string]: any },
+) {
+  return request<API.Result_UserInfo_>('/access/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+export async function modifyAccess(
+  params: {
+    // path
+    id?: string;
+  },
+  body?: API.AccessInfo,
+  options?: { [key: string]: any },
+) {
+  return request<API.Result_UserInfo_>(`/access/update/${params.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    // params: { ...params },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 export async function deleteAccess (
   params: {
     // path

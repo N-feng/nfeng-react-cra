@@ -126,8 +126,8 @@ const App: React.FC<TableTransProps> = (props: any) => {
 
   const originTargetKeys = (values?.access || []).map((item: any) => item.id)
 
-  const { data }: any = useFetch(queryAccessList)
-  const dataSource = (data || []).map((item: any) => ({ ...item, disabled: false, key: item.id }))
+  const { data: { list } }: any = useFetch(queryAccessList)
+  const dataSource = (list || []).map((item: any) => ({ ...item, disabled: false, key: item.id }))
 
   const [targetKeys, setTargetKeys] = useState<string[]>(originTargetKeys);
   const [disabled, setDisabled] = useState(false);
@@ -153,7 +153,7 @@ const App: React.FC<TableTransProps> = (props: any) => {
     if (res.code === 200) {
       notification.success({
         message: '授权成功',
-        description: '请重新登录哦！',
+        description: '烦请该用户重新登录哦！',
       });
       props.onSubmit()
     }

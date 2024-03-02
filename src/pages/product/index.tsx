@@ -9,8 +9,9 @@ import { Button, Input, message } from 'antd';
 import { useRef, useState } from 'react';
 import { addAccess, deleteAccess, modifyAccess, queryAccessList } from '../../api/AccessController';
 import { MySelect } from '../../components/MySelect';
-import CreateForm from './components/CreateForm';
-import UpdateForm from './components/UpdateForm';
+import { UpdateForm } from './components/UpdateForm';
+import { CreateForm } from './components/CreateForm';
+import { Link, NavLink } from 'react-router-dom';
 
 /**
  * 添加节点
@@ -79,7 +80,7 @@ const handleRemove = async (selectedRows: API.AccessInfo[]) => {
   }
 };
 
-const AccessPage = () => {
+const ProductPage = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
@@ -175,15 +176,17 @@ const AccessPage = () => {
       valueType: 'option',
       render: (_, record) => (
         <>
-          <Button
-            type='link'
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(record);
-            }}
-          >
-            编辑
-          </Button>
+          <NavLink to={`/product/update/${record.id}`}>
+            <Button
+              type='link'
+              onClick={() => {
+                handleUpdateModalVisible(true);
+                setStepFormValues(record);
+              }}
+            >
+              编辑
+            </Button>
+          </NavLink>
           <TableDropdown
             key="more"
             onSelect={async (key) => {
@@ -215,13 +218,22 @@ const AccessPage = () => {
           labelWidth: 120,
         }}
         toolBarRender={() => [
-          <Button
-            key="1"
-            type="primary"
-            onClick={() => handleModalVisible(true)}
-          >
-            新建
-          </Button>,
+          // <Button
+          //   key="1"
+          //   type="primary"
+          //   onClick={() => handleModalVisible(true)}
+          // >
+          //   新建
+          // </Button>,
+          <NavLink to={`/product/create`}>
+            <Button
+              key="1"
+              type="primary"
+              // onClick={() => handleModalVisible(true)}
+            >
+              新建
+            </Button>
+          </NavLink>
         ]}
         request={async (params, sorter, filter) => {
           const { data } = await queryAccessList({
@@ -299,4 +311,4 @@ const AccessPage = () => {
   );
 }
 
-export default AccessPage
+export default ProductPage

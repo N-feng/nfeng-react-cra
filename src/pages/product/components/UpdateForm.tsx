@@ -21,7 +21,22 @@ export interface UpdateFormProps {
   columns: ProColumns<API.AccessInfo>[]
 }
 
-const UpdateForm: React.FC<UpdateFormProps> = (props) => {
+export async function loader({ params }: any) {
+  console.log('params: ', params);
+  // const contact = await getContact(params.contactId);
+  // return { contact };
+}
+
+export async function action({ request, params }: any) {
+  const formData = await request.formData();
+  const updates = Object.fromEntries(formData);
+  // await updateContact(params.contactId, updates);
+  console.log('updates: ', updates);
+  console.log('params.contactId: ', params.contactId);
+  // return redirect(`/contacts/${params.contactId}`);
+}
+
+export const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   return (
 
     <Modal
@@ -54,4 +69,8 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   );
 };
 
-export default UpdateForm;
+const ProductUpdate = ( ) => {
+  return <div>ProductUpdate</div>
+}
+
+export default ProductUpdate;
