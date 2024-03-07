@@ -1,8 +1,9 @@
 import Layout from "../layouts";
 import ErrorPage from "../pages/error-page";
 import ProductPage from "../pages/product";
-import ProductCreate from "../pages/product/components/CreateForm";
-import ProductUpdate, {
+import { ProductCreate } from "../pages/product/components/CreateForm";
+import {
+  ProductUpdate,
   loader as productLoader,
 } from "../pages/product/components/UpdateForm";
 

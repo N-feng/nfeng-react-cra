@@ -4,8 +4,14 @@ import { errorHandler, responseHandler } from './errorHandle'
 
 const UMI_APP_API_URL = process.env.UMI_APP_API_URL
 
+export const baseURL = `${UMI_APP_API_URL || ''}/api`
+
+export const getToken = () => {
+  return localStorage.getItem("token") as string
+}
+
 const config: AxiosRequestConfig = {
-  baseURL: `${UMI_APP_API_URL || ''}/api`,
+  baseURL,
   timeout: 60000
 }
 
@@ -14,11 +20,10 @@ export const request = axios.create(config)
 request.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // 一般会请求拦截里面加token，用于后端的验证
-    const token = localStorage.getItem("token") as string
-    if(token) {
+    const token = getToken();
+    if (token)  {
       config.headers!.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (err: any) => {

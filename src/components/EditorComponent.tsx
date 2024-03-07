@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // Require Editor CSS files.
 
@@ -15,14 +15,11 @@ import FroalaEditorComponent from 'react-froala-wysiwyg';
 // import FroalaEditorImg from 'react-froala-wysiwyg/FroalaEditorImg';
 // import FroalaEditorInput from 'react-froala-wysiwyg/FroalaEditorInput';
 
-import './EditorComponent.css';
-
 // Import all Froala Editor plugins;
 import 'froala-editor/js/plugins.pkgd.min.js';
+import { baseURL, getToken } from '../utils/request';
 
-// Render Froala Editor component.
-
-const defaultContent = `<div>
+export const defaultContent = `<div>
 <section data-element_type="section" data-id="6dad7bdb">
   <div data-element_type="column" data-id="2fdea927">
     <div data-element_type="widget" data-id="1ae5ac6e" data-widget_type="heading.default">
@@ -55,181 +52,47 @@ const defaultContent = `<div>
     </section>
   </div>`;
 
-  const froalaEditorConfig = {
+
+export const EditorComponent: React.FC<{
+  options?: {
+    label: React.ReactNode;
+    value: number;
+  }[];
+  /** Value 和 onChange 会被自动注入 */
+  value?: string;
+  label?: string;
+  name?: string;
+  onChange?: (value: string) => void;
+}> = (props) => {
+
+  const token = getToken()
+
+  let config = {
     attribution: false,
-    height: 400,
-    quickInsertEnabled: false,
-    imageDefaultWidth: 0,
-    imageResizeWithPercent: true,
-    imageMultipleStyles: false,
-    imageOutputSize: true,
-    imageRoundPercent: true,
-    imageMaxSize: 1024 * 1024 * 2.5,
-    imageEditButtons: [
-      "imageReplace",
-      "imageAlign",
-      "imageRemove",
-      "imageSize",
-      "-",
-      "imageLink",
-      "linkOpen",
-      "linkEdit",
-      "linkRemove"
-    ],
-    imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
-    imageInsertButtons: ["imageBack", "|", "imageUpload"],
-    placeholderText: "Your content goes here!",
-    colorsStep: 5,
-    colorsText: [
-      "#000000",
-      "#2C2E2F",
-      "#6C7378",
-      "#FFFFFF",
-      "#009CDE",
-      "#003087",
-      "#FF9600",
-      "#00CF92",
-      "#DE0063",
-      "#640487",
-      "REMOVE"
-    ],
-    colorsBackground: [
-      "#000000",
-      "#2C2E2F",
-      "#6C7378",
-      "#FFFFFF",
-      "#009CDE",
-      "#003087",
-      "#FF9600",
-      "#00CF92",
-      "#DE0063",
-      "#640487",
-      "REMOVE"
-    ],
-    toolbarButtons: {
-      moreText: {
-        buttons: [
-          "paragraphFormat",
-          "|",
-          "fontSize",
-          "textColor",
-          "backgroundColor",
-          "insertImage",
-          "alignLeft",
-          "alignRight",
-          "alignJustify",
-          "formatOL",
-          "formatUL",
-          "indent",
-          "outdent"
-        ],
-        buttonsVisible: 6
-      },
-      moreRich: {
-        buttons: [
-          "|",
-          "bold",
-          "italic",
-          "underline",
-          "insertHR",
-          "insertLink",
-          "insertTable"
-        ],
-        name: "additionals",
-        buttonsVisible: 3
-      },
-      dummySection: {
-        buttons: ["|"]
-      },
-      moreMisc: {
-        buttons: ["|", "undo", "redo", "help", "|"],
-        align: "right",
-        buttonsVisible: 2
-      }
+    heightMin: 300,
+    requestHeaders: {
+      Authorization: token && `Bearer ${token}`
     },
-    tableEditButtons: [
-      "tableHeader",
-      "tableRemove",
-      "tableRows",
-      "tableColumns",
-      "tableStyle",
-      "-",
-      "tableCells",
-      "tableCellBackground",
-      "tableCellVerticalAlign",
-      "tableCellHorizontalAlign"
-    ],
-    tableStyles: {
-      grayTableBorder: "Gray Table Border",
-      blackTableBorder: "Black Table Border",
-      noTableBorder: "No Table Border"
-    },
-    toolbarSticky: true,
-    pluginsEnabled: [
-      "align",
-      "colors",
-      "entities",
-      "fontSize",
-      "help",
-      "image",
-      "link",
-      "lists",
-      "paragraphFormat",
-      "paragraphStyle",
-      "save",
-      "table",
-      "wordPaste"
-    ],
-    events: {
-      "image.beforeUpload": function (files: any, arg1: any, arg2: any) {
-        var editor: any = this;
-        if (files.length) {
-          if (files[0].size / 1000 > 255) {
-            alert("Image file size exceeded the limit");
-            return false;
-          } else {
-            // Create a File Reader.
-            var reader = new FileReader();
-            // Set the reader to insert images when they are loaded.
-            reader.onload = (e: any) => {
-              var result = e.target.result;
-              editor.image.insert(result, null, null, editor.image.get());
-            };
-            // Read image as base64.
-            reader.readAsDataURL(files[0]);
-          }
-        }
-        editor.popups.hideAll();
-        // Stop default upload chain.
-        return false;
-      }
-    }
+    imageUploadURL: `${baseURL}/product/upload`,
+    requestWithCORS: false,
   };
 
-function EditorComponent (){
-
-  // let config = {
-  //   documentReady: true,
-  //   heightMin: 300,
-  //   events : {
-  //     'contentChanged' : function(e: any, editor: any) {
-  //       console.log('test');
-  //     }
-  //   }
-  // };
+  const [model, setModel] = useState(props.value);
+              
+  const handleModelChange= (event: any) => {
+    console.log('event: ', event);
+    setModel(event);
+    props.onChange?.(event);
+  }
 
   return (
-    
     <div className="editor">
-      <h2> Froala's React WYSIWYG Editor</h2>
-     <FroalaEditorComponent 
-      model={defaultContent} 
-      config={froalaEditorConfig} 
-      tag='textarea' 
-    />
-    {/* <FroalaEditorView
-      model={defaultContent}  
-    /> */}
+      <FroalaEditorComponent 
+        model={model} 
+        config={config} 
+        tag='textarea'
+        onModelChange={handleModelChange}
+      />
     </div>
   );
 
