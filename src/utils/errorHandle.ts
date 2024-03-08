@@ -68,15 +68,14 @@ const errorHandler = (error: error) => {
       message: error.response.data.msg || '登录令牌过期',
       description: '请重新登录哦！',
     });
-    // window.location.href = '/login';
-    return window.location.href = '/login';
+    // return window.location.href = '/login';
   }
   const { url } = error.config;
   const { data } = error.response;
   notification.error({
     message: `请求错误 ${status}: ${url}`,
     // description: errortext,
-    description: data.message?.[0] || data.msg,
+    description: data.message || data.message?.[0] || data.msg,
   });
 };
 

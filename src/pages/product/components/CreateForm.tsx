@@ -93,7 +93,7 @@ export const ProductCreate = () => {
         }
       }}
       initialValues={{
-        name: '蚂蚁设计有限公司',
+        name: '',
         useMode: 'chapter',
       }}
     >
@@ -120,7 +120,13 @@ export const ProductCreate = () => {
           width="md"
           name="price"
           label="菜品价格"
-          placeholder="请输入名称"
+          placeholder="请输入菜品价格"
+        />
+        <ProFormText
+          width="md"
+          name="sort"
+          label="菜品排序"
+          placeholder="请输入菜品排序"
         />
         <ProFormCheckbox.Group
           name="checkbox-group"
@@ -133,14 +139,19 @@ export const ProductCreate = () => {
           label="菜品状态"
           options={[
             {
-              value: '0',
+              value: '1',
               label: '显示',
             },
             {
-              value: '1',
+              value: '0',
               label: '隐藏',
             },
           ]}
+        />
+        <ProFormCheckbox.Group
+          name="checkbox-group"
+          label="加入推荐"
+          options={['精品', '热销']}
         />
       {/* </ProForm.Group> */}
       <ProForm.Item

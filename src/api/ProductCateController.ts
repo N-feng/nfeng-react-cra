@@ -1,6 +1,6 @@
 import { request } from "../utils/request";
 
-export async function queryProductList (
+export async function queryProductCateList (
   params: {
     // query
     /** keyword */
@@ -11,18 +11,18 @@ export async function queryProductList (
     pageSize?: number;
   },
 ) {
-  return request.post('product/findAll', params)
+  return request.post('productCate/findAll', params)
 }
 
 export async function queryProductById(id:number) {
-  return request.get(`product/findOne?id=${id}`)
+  return request.get(`productCate/findOne/${id}`)
 }
 
-export async function addProduct(
+export async function addProductCate(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/product/create', {
+  return request<API.Result_UserInfo_>('/productCate/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,7 +32,12 @@ export async function addProduct(
   });
 }
 
-export async function modifyProduct(
+
+export async function queryProductCateOptions() {
+  return request.get('productCate/options')
+}
+
+export async function modifyProductCate(
   params: {
     // path
     id?: string,
@@ -40,7 +45,7 @@ export async function modifyProduct(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>(`/product/update?id=${params.id}`, {
+  return request<API.Result_UserInfo_>(`/productCate/update?id=${params.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -51,7 +56,7 @@ export async function modifyProduct(
   });
 }
 
-export async function deleteProduct (
+export async function deleteProductCate (
   params: {
     // path
     /** userId */
@@ -59,7 +64,7 @@ export async function deleteProduct (
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_string_>('product/remove', {
+  return request<API.Result_string_>('productCate/remove', {
     method: 'DELETE',
     params: { ...params },
     ...(options || {}),
@@ -71,7 +76,7 @@ export async function uploadFile(
   // options?: { [key: string]: any },
   params: any
 ) {
-  // return request<API.Result_UserInfo_>('/product/upload', {
+  // return request<API.Result_UserInfo_>('/productCate/upload', {
   //   method: 'POST',
   //   headers: {
   //     'Content-Type': 'application/json',
@@ -79,5 +84,5 @@ export async function uploadFile(
   //   data: body,
   //   ...(options || {}),
   // });
-  return request.post('/product/upload', params)
+  return request.post('/productCate/upload', params)
 }

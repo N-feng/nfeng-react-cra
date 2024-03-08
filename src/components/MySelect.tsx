@@ -1,4 +1,5 @@
 import { Select } from "antd";
+import { FieldNames } from "rc-select/lib/Select";
 import { useEffect, useState } from "react";
 
 const MySelect: React.FC<{
@@ -9,6 +10,7 @@ const MySelect: React.FC<{
   /** Value 和 onChange 会被自动注入 */
   value?: string;
   onChange?: (value: string) => void;
+  fieldNames?: FieldNames;
 }> = (props) => {
   const { options } = props;
 
@@ -33,6 +35,7 @@ const MySelect: React.FC<{
       style={{
         textAlign: "left",
       }}
+      fieldNames={props.fieldNames}
     />
   );
 };

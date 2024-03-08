@@ -10,11 +10,12 @@ import {
 import {
   LoginFormPage,
   ProConfigProvider,
+  ProForm,
   ProFormCaptcha,
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Button, Divider, Space, Tabs, message, theme } from 'antd';
+import { Button, Divider, Flex, Input, Space, Tabs, message, theme } from 'antd';
 import type { TabsProps } from 'antd';
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
@@ -46,6 +47,7 @@ const Page = () => {
     },
   ];
   const [messageApi, contextHolder] = message.useMessage();
+  const [img, setImg] = useState('/api/captcha');
   return (
     <div
       style={{
@@ -89,13 +91,15 @@ const Page = () => {
           ),
         }}
         onFinish={async (values: any) => {
-          const { data } = await login(values);
-          localStorage.setItem('token', data.token);
-          messageApi.open({
-            type: 'success',
-            content: '提交成功',
-          });
-          navigate('/welcome');
+          const { data: { token } } = await login(values);
+          if (token) {
+            localStorage.setItem('token', token);
+            messageApi.open({
+              type: 'success',
+              content: '提交成功',
+            });
+            navigate('/welcome');
+          }
         }}
         actions={
           <div
@@ -214,6 +218,24 @@ const Page = () => {
                 },
               ]}
             />
+            <ProForm.Item
+              name="code"
+              rules={[{ required: true, message: '请输入验证码!' }]}
+            >
+              <Flex justify={'space-between'}>
+                <Input
+                  placeholder="input captcha"
+                />
+                <img 
+                  style={{ marginLeft: 20 }}
+                  id="verify_img" 
+                  src={img} 
+                  title="看不清？点击刷新" 
+                  onClick={() => setImg('/api/captcha?mt='+Math.random())} 
+                  alt='captcha' 
+                />
+              </Flex>
+            </ProForm.Item>
           </>
         )}
         {loginType === 'phone' && (

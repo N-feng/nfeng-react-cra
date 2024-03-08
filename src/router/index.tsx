@@ -10,6 +10,7 @@ import RolePage from "../pages/role";
 import AccessPage from "../pages/access";
 import HomePage from "../pages/home";
 import { Product } from "./product";
+import { ProductCate } from "./productCate";
 
 export const routes: RouteObject[] = [
   {
@@ -63,6 +64,7 @@ export const routes: RouteObject[] = [
     ]
   },
   Product,
+  ProductCate,
 ]
 
 export const router = createBrowserRouter(routes);

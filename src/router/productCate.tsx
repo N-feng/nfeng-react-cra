@@ -1,6 +1,5 @@
 import Layout from "../layouts";
 import ErrorPage from "../pages/error-page";
-import { ProductPage } from "../pages/product";
 import { ProductCreate } from "../pages/product/components/CreateForm";
 import {
   ProductUpdate,
@@ -8,14 +7,14 @@ import {
 } from "../pages/product/components/UpdateForm";
 import { ProductCatePage } from "../pages/product-cate";
 
-export const Product = {
-  path: "/product",
+export const ProductCate = {
+  path: "/productCate",
   element: <Layout />,
   errorElement: <ErrorPage />,
   children: [
     {
       path: "list",
-      element: <ProductPage />,
+      element: <ProductCatePage />,
     },
     {
       path: "create",
@@ -25,10 +24,6 @@ export const Product = {
       path: "update/:id",
       element: <ProductUpdate />,
       loader: productLoader,
-    },
-    {
-      path: "category",
-      element: <ProductCatePage />,
     },
   ]
 }

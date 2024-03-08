@@ -5,8 +5,8 @@ import {
   ProColumns,
   TableDropdown,
 } from '@ant-design/pro-components';
-import { Button, message, Image } from 'antd';
-import { useRef, useState } from 'react';
+import { Button, message, Image, Space, Tag } from 'antd';
+import { useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { deleteProduct, queryProductList } from '../../api/ProductController';
 
@@ -33,7 +33,7 @@ const handleRemove = async (selectedRows: any[]) => {
   }
 };
 
-const ProductPage = () => {
+export const ProductPage = () => {
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<any>[] = [
     {
@@ -50,11 +50,15 @@ const ProductPage = () => {
       dataIndex: 'title',
       valueType: 'text',
     },
-    // {
-    //   title: '菜品分类',
-    //   dataIndex: 'moduleName',
-    //   valueType: 'text',
-    // },
+    {
+      title: '菜品分类',
+      dataIndex: 'pro_cat',
+      valueType: 'text',
+      render: (_, row) => {
+        // console.log('row: ', row);
+        return row.pro_cat?.title || '-'
+      }
+    },
     {
       title: '菜品图片',
       dataIndex: 'image',
@@ -66,26 +70,56 @@ const ProductPage = () => {
           <Image
             width={80}
             src={el.url}
-            style={{
-              marginRight: "10px"
-            }}
+            key={el.uid}
           />
         ))
       },
     },
 
-    // {
-    //   title: '增加时间',
-    //   dataIndex: 'createdAt',
-    //   valueType: 'text',
-    //   hideInForm: true,
-    //   search: false,
-    // },
-    // {
-    //   title: '推荐',
-    //   dataIndex: 'moduleName',
-    //   valueType: 'text',
-    // },
+    {
+      title: '增加时间',
+      dataIndex: 'createdAt',
+      valueType: 'text',
+      hideInForm: true,
+      search: false,
+    },
+    {
+      title: '排序',
+      dataIndex: 'sort',
+      valueType: 'text',
+      hideInForm: true,
+      search: false,
+    },
+    {
+      title: '推荐',
+      dataIndex: 'is_best',
+      valueType: 'text',
+      render: (_, record) => (
+        record.is_best ? <Space>
+          {/* {record.labels.map(({ name, color }: any) => (
+            <Tag color={color} key={name}>
+              {name}
+            </Tag>
+          ))} */}
+          <Tag color='red' key={record.id+record.is_best}>荐</Tag>
+        </Space> : '-'
+      ),
+    },
+    {
+      title: '热销',
+      dataIndex: 'is_hot',
+      valueType: 'text',
+      render: (_, record) => (
+        record.is_hot ? <Space>
+          {/* {record.labels.map(({ name, color }: any) => (
+            <Tag color={color} key={name}>
+              {name}
+            </Tag>
+          ))} */}
+          <Tag color='red' key={record.id+record.is_hot}>热</Tag>
+        </Space> : '-'
+      ),
+    },
     // {
     //   title: '节点类型',
     //   dataIndex: 'type',
@@ -175,7 +209,7 @@ const ProductPage = () => {
   return (
     <PageContainer
       header={{
-        title: '权限管理',
+        title: '菜品列表',
       }}
     >
       <ProTable<any>
@@ -211,7 +245,7 @@ const ProductPage = () => {
             sorter,
             filter,
           });
-            console.log('data: ', data);
+            // console.log('data: ', data);
           return {
             data: data?.list || [],
             // success,
@@ -227,4 +261,3 @@ const ProductPage = () => {
   );
 }
 
-export default ProductPage
