@@ -34,6 +34,7 @@ const loopMenuItem = (menus: any[]): MenuDataItem[] =>
 
 export default function Layout() {
   const location = useLocation();
+  console.log('location: ', location);
   const token = localStorage.getItem('token');
   const { data: { username, access } }: any = useFetch(profile);
   const defaultProps = {

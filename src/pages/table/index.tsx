@@ -5,11 +5,12 @@ import {
   ProColumns,
   TableDropdown,
 } from '@ant-design/pro-components';
-import { Button, message } from 'antd';
+import { Button, message, Image } from 'antd';
 import { useRef, useState } from 'react';
-import { addProductCate, deleteProductCate, modifyProductCate, queryProductCateList } from '../../api/ProductCateController';
+import { addTable, deleteTable, modifyTable, queryTableList, showTableCode } from '../../api/TableController';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
+import Canvas from '../../components/Canvas';
 
 /**
  * 添加节点
@@ -18,7 +19,7 @@ import UpdateForm from './components/UpdateForm';
 const handleAdd = async (fields: any) => {
   const hide = message.loading('正在添加');
   try {
-    await addProductCate({ ...fields });
+    await addTable({ ...fields });
     hide();
     message.success('添加成功');
     return true;
@@ -37,7 +38,7 @@ const handleUpdate = async (fields: any) => {
   console.log('fields: ', fields);
   const hide = message.loading('正在配置');
   try {
-    await modifyProductCate(
+    await modifyTable(
       {
         id: fields.id || '',
       },
@@ -65,7 +66,7 @@ const handleRemove = async (selectedRows: any[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await deleteProductCate({
+    await deleteTable({
       id: selectedRows.find((row) => row.id)?.id || '',
     });
     hide();
@@ -78,7 +79,7 @@ const handleRemove = async (selectedRows: any[]) => {
   }
 };
 
-export const ProductCatePage = () => {
+export const TablePage = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
@@ -86,7 +87,7 @@ export const ProductCatePage = () => {
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<any>[] = [
     {
-      title: '权限id',
+      title: '桌号id',
       dataIndex: 'id',
       tip: 'id是唯一的 key',
       search: false,
@@ -95,17 +96,54 @@ export const ProductCatePage = () => {
       }
     },
     {
-      title: '分类名称',
+      title: '桌号名称',
       dataIndex: 'title',
       valueType: 'text',
       formItemProps: {
-        rules: [{ required: true, message: '请输入分类名称!' }]
+        rules: [{ required: true, message: '请输入桌号名称!' }]
       }
     },
     {
-      title: '分类描述',
-      dataIndex: 'actionName',
-      valueType: 'textarea',
+      title: '桌号',
+      dataIndex: 'table_num',
+      valueType: 'text',
+      formItemProps: {
+        rules: [{ required: true, message: '请输入桌号!' }]
+      }
+    },
+    {
+      title: '桌号二维码',
+      dataIndex: 'image',
+      key: 'image',
+      valueType: 'image',
+      render: (_, row) => {
+        // console.log(row)
+        return  (
+          row.codeSrc ? <Image
+            width={80}
+            preview={{
+              imageRender: () => (
+                // <video
+                //   muted
+                //   width="100%"
+                //   controls
+                //   src="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/file/A*uYT7SZwhJnUAAAAAAAAAAAAADgCCAQ"
+                // />
+                <Canvas text={row.title} codeDir={row.codeSrc} />
+              ),
+              toolbarRender: () => null,
+            }}
+            src={row.codeSrc}
+          /> : '-'
+        )
+        // return row.img_url.map((el: any) => (
+        //   <Canvas
+        //     width={80}
+        //     src={el.url}
+        //     key={el.uid}
+        //   />
+        // ))
+      },
     },
     {
       title: '排序',
@@ -114,7 +152,7 @@ export const ProductCatePage = () => {
       search: false,
     },
     {
-      title: '分类状态',
+      title: '状态',
       dataIndex: 'status',
       valueType: 'radio',
       search: false,
@@ -156,13 +194,17 @@ export const ProductCatePage = () => {
           <TableDropdown
             key="more"
             onSelect={async (key) => {
+              if (key === 'showCode') {
+                await showTableCode(record.id)
+                actionRef.current?.reloadAndRest?.();
+              }
               if (key === 'delete') {
                 await handleRemove([record])
                 actionRef.current?.reloadAndRest?.();
               }
             }}
             menus={[
-              // { key: 'copy', name: '复制' },
+              { key: 'showCode', name: '显示二维码' },
               { key: 'delete', name: '删除' },
             ]}
           />
@@ -173,7 +215,7 @@ export const ProductCatePage = () => {
   return (
     <PageContainer
       header={{
-        title: '菜品分类',
+        title: '桌号管理',
       }}
     >
       <ProTable<any>
@@ -193,7 +235,7 @@ export const ProductCatePage = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          const { data } = await queryProductCateList({
+          const { data } = await queryTableList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
