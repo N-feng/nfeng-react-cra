@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function login (
   params: {
@@ -6,11 +6,11 @@ export async function login (
     password: string;
   },
 ) {
-  return request.post('login', params)
+  return AuthAxios.post('login', params)
 }
 
 export async function profile () {
-  return request.get('profile')
+  return AuthAxios.get('profile')
 }
 
 export async function doAuth (
@@ -19,5 +19,5 @@ export async function doAuth (
     accessIds: string[];
   },
 ) {
-  return request.post('doAuth', params)
+  return AuthAxios.post('doAuth', params)
 }

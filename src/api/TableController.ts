@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function queryTableList (
   params: {
@@ -11,22 +11,22 @@ export async function queryTableList (
     pageSize?: number;
   },
 ) {
-  return request.post('table/findAll', params)
+  return AuthAxios.post('table/findAll', params)
 }
 
 export async function queryTableById(id:number) {
-  return request.get(`table/findOne/${id}`)
+  return AuthAxios.get(`table/findOne/${id}`)
 }
 
 export async function showTableCode(id:number) {
-  return request.get(`table/showCode?id=${id}`)
+  return AuthAxios.get(`table/showCode?id=${id}`)
 }
 
 export async function addTable(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/table/create', {
+  return AuthAxios<API.Result_UserInfo_>('/table/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export async function addTable(
 
 
 export async function queryTableOptions() {
-  return request.get('table/options')
+  return AuthAxios.get('table/options')
 }
 
 export async function modifyTable(
@@ -49,7 +49,7 @@ export async function modifyTable(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>(`/table/update?id=${params.id}`, {
+  return AuthAxios<API.Result_UserInfo_>(`/table/update?id=${params.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ export async function deleteTable (
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_string_>('table/remove', {
+  return AuthAxios<API.Result_string_>('table/remove', {
     method: 'DELETE',
     params: { ...params },
     ...(options || {}),
@@ -80,7 +80,7 @@ export async function uploadFile(
   // options?: { [key: string]: any },
   params: any
 ) {
-  // return request<API.Result_UserInfo_>('/table/upload', {
+  // return AuthAxios<API.Result_UserInfo_>('/table/upload', {
   //   method: 'POST',
   //   headers: {
   //     'Content-Type': 'application/json',
@@ -88,5 +88,5 @@ export async function uploadFile(
   //   data: body,
   //   ...(options || {}),
   // });
-  return request.post('/table/upload', params)
+  return AuthAxios.post('/table/upload', params)
 }

@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function querySettingList (
   params: {
@@ -11,18 +11,18 @@ export async function querySettingList (
     pageSize?: number;
   },
 ) {
-  return request.post('setting/findAll', params)
+  return AuthAxios.post('setting/findAll', params)
 }
 
 export async function querySettingById(id:number) {
-  return request.get(`setting/findOne?id=${id}`)
+  return AuthAxios.get(`setting/findOne?id=${id}`)
 }
 
 export async function addSetting(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/setting/create', {
+  return AuthAxios<API.Result_UserInfo_>('/setting/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export async function modifySetting(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>(`/setting/update?id=${params.id}`, {
+  return AuthAxios<API.Result_UserInfo_>(`/setting/update?id=${params.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export async function deleteSetting (
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_string_>('setting/remove', {
+  return AuthAxios<API.Result_string_>('setting/remove', {
     method: 'DELETE',
     params: { ...params },
     ...(options || {}),
@@ -71,7 +71,7 @@ export async function uploadFile(
   // options?: { [key: string]: any },
   params: any
 ) {
-  // return request<API.Result_UserInfo_>('/setting/upload', {
+  // return AuthAxios<API.Result_UserInfo_>('/setting/upload', {
   //   method: 'POST',
   //   headers: {
   //     'Content-Type': 'application/json',
@@ -79,5 +79,5 @@ export async function uploadFile(
   //   data: body,
   //   ...(options || {}),
   // });
-  return request.post('/setting/upload', params)
+  return AuthAxios.post('/setting/upload', params)
 }

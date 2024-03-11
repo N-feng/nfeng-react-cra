@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function queryRoleList (
   params: {
@@ -11,9 +11,9 @@ export async function queryRoleList (
     pageSize?: number;
   },
 ) {
-  return request.post('role/findAll',  params)
+  return AuthAxios.post('role/findAll',  params)
 }
 
 export async function profile () {
-  return request.get('profile')
+  return AuthAxios.get('profile')
 }

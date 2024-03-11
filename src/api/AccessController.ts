@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function queryAccessList (
   params: {
@@ -11,14 +11,14 @@ export async function queryAccessList (
     pageSize?: number;
   },
 ) {
-  return request.post('access/findAll', params)
+  return AuthAxios.post('access/findAll', params)
 }
 
 export async function addAccess(
   body?: API.AccessInfo,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/access/create', {
+  return AuthAxios<API.Result_UserInfo_>('/access/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export async function modifyAccess(
   body?: API.AccessInfo,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>(`/access/update/${params.id}`, {
+  return AuthAxios<API.Result_UserInfo_>(`/access/update/${params.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export async function deleteAccess (
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_string_>('access/remove', {
+  return AuthAxios<API.Result_string_>('access/remove', {
     method: 'DELETE',
     params: { ...params },
     ...(options || {}),

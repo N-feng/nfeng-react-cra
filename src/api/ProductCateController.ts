@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function queryProductCateList (
   params: {
@@ -11,18 +11,18 @@ export async function queryProductCateList (
     pageSize?: number;
   },
 ) {
-  return request.post('productCate/findAll', params)
+  return AuthAxios.post('productCate/findAll', params)
 }
 
 export async function queryProductById(id:number) {
-  return request.get(`productCate/findOne/${id}`)
+  return AuthAxios.get(`productCate/findOne/${id}`)
 }
 
 export async function addProductCate(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/productCate/create', {
+  return AuthAxios<API.Result_UserInfo_>('/productCate/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export async function addProductCate(
 
 
 export async function queryProductCateOptions() {
-  return request.get('productCate/options')
+  return AuthAxios.get('productCate/options')
 }
 
 export async function modifyProductCate(
@@ -45,7 +45,7 @@ export async function modifyProductCate(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>(`/productCate/update?id=${params.id}`, {
+  return AuthAxios<API.Result_UserInfo_>(`/productCate/update?id=${params.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export async function deleteProductCate (
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_string_>('productCate/remove', {
+  return AuthAxios<API.Result_string_>('productCate/remove', {
     method: 'DELETE',
     params: { ...params },
     ...(options || {}),
@@ -76,7 +76,7 @@ export async function uploadFile(
   // options?: { [key: string]: any },
   params: any
 ) {
-  // return request<API.Result_UserInfo_>('/productCate/upload', {
+  // return AuthAxios<API.Result_UserInfo_>('/productCate/upload', {
   //   method: 'POST',
   //   headers: {
   //     'Content-Type': 'application/json',
@@ -84,5 +84,5 @@ export async function uploadFile(
   //   data: body,
   //   ...(options || {}),
   // });
-  return request.post('/productCate/upload', params)
+  return AuthAxios.post('/productCate/upload', params)
 }

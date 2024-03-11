@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function queryProductList (
   params: {
@@ -11,18 +11,18 @@ export async function queryProductList (
     pageSize?: number;
   },
 ) {
-  return request.post('product/findAll', params)
+  return AuthAxios.post('product/findAll', params)
 }
 
 export async function queryProductById(id:number) {
-  return request.get(`product/findOne?id=${id}`)
+  return AuthAxios.get(`product/findOne?id=${id}`)
 }
 
 export async function addProduct(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/product/create', {
+  return AuthAxios<API.Result_UserInfo_>('/product/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export async function modifyProduct(
   body?: any,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>(`/product/update?id=${params.id}`, {
+  return AuthAxios<API.Result_UserInfo_>(`/product/update?id=${params.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export async function deleteProduct (
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_string_>('product/remove', {
+  return AuthAxios<API.Result_string_>('product/remove', {
     method: 'DELETE',
     params: { ...params },
     ...(options || {}),
@@ -71,7 +71,7 @@ export async function uploadFile(
   // options?: { [key: string]: any },
   params: any
 ) {
-  // return request<API.Result_UserInfo_>('/product/upload', {
+  // return AuthAxios<API.Result_UserInfo_>('/product/upload', {
   //   method: 'POST',
   //   headers: {
   //     'Content-Type': 'application/json',
@@ -79,5 +79,5 @@ export async function uploadFile(
   //   data: body,
   //   ...(options || {}),
   // });
-  return request.post('/product/upload', params)
+  return AuthAxios.post('/product/upload', params)
 }

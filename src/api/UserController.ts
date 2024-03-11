@@ -1,4 +1,4 @@
-import { request } from "../utils/request";
+import { AuthAxios } from "../utils/request";
 
 export async function queryUserList (
   params: {
@@ -11,14 +11,14 @@ export async function queryUserList (
     pageSize?: number;
   },
 ) {
-  return request.post('user/findAll',  params)
+  return AuthAxios.post('user/findAll',  params)
 }
 
 export async function addUser(
   body?: API.UserInfo,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/user/create', {
+  return AuthAxios<API.Result_UserInfo_>('/user/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export async function getUserDetail(
   options?: { [key: string]: any },
 ) {
   const { userId: param0 } = params;
-  return request<API.Result_UserInfo_>(`/api/v1/user/${param0}`, {
+  return AuthAxios<API.Result_UserInfo_>(`/api/v1/user/${param0}`, {
     method: 'GET',
     params: { ...params },
     ...(options || {}),
@@ -54,7 +54,7 @@ export async function modifyUser(
   options?: { [key: string]: any },
 ) {
   const { userId } = params;
-  return request<API.Result_UserInfo_>(`/user/update/${userId}`, {
+  return AuthAxios<API.Result_UserInfo_>(`/user/update/${userId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export async function deleteUser (
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_string_>('user/remove', {
+  return AuthAxios<API.Result_string_>('user/remove', {
     method: 'DELETE',
     params: { ...params },
     ...(options || {}),
