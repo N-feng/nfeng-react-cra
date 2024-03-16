@@ -1,10 +1,10 @@
-import { Col, Row, Space } from 'antd';
+import { Button, Col, Row, Space } from 'antd';
 import { useState } from 'react';
 import EditorComponent from '../../../components/EditorComponent';
 import { ProForm, ProFormCheckbox, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { message } from 'antd';
 import { modifyProduct, queryProductById } from '../../../api/ProductController';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { NavLink, useLoaderData, useNavigate } from 'react-router-dom';
 import { ImageUpload } from '../../../components/upload/ImageUpload';
 import { queryProductCateOptions } from '../../../api/ProductCateController';
 import { useFetch } from '../../../hook/useFetch';
@@ -86,7 +86,18 @@ export const ProductUpdate = () => {
           return formLayoutType === LAYOUT_TYPE_HORIZONTAL ? (
             <Row>
               <Col span={14} offset={4}>
-                <Space>{doms}</Space>
+                <Space>
+                  <NavLink to={`/product/list`}>
+                    <Button
+                      key="1"
+                      // type="primary"
+                      // onClick={() => handleModalVisible(true)}
+                    >
+                      返回
+                    </Button>
+                  </NavLink>
+                  {doms}
+                </Space>
               </Col>
             </Row>
           ) : (
@@ -108,12 +119,12 @@ export const ProductUpdate = () => {
           ...values,
           content: model,
           id: product.id,
-          img_url: values.img_url.map((item: any) => {
-            return {
-              ...item,
-              url: item.url || item.response.link
-            }
-          })
+          // img_url: values.img_url.map((item: any) => {
+          //   return {
+          //     ...item,
+          //     url: item.url || item.response.link
+          //   }
+          // })
         });
         if (success) {
           navigate("/product/list")
@@ -123,7 +134,9 @@ export const ProductUpdate = () => {
         title: product.title,
         useMode: 'chapter',
         id: product.id,
-        img_url: product.img_url,
+        imgUrl: product.imgUrl ? [{
+          url: product.imgUrl
+        }] : [],
       }}
     >
       <ProFormText
@@ -166,9 +179,10 @@ export const ProductUpdate = () => {
         rules={[{ required: true, message: '请输入菜品名称!' }]}
       />
       <ImageUpload 
-        name="img_url" 
+        name="imgUrl" 
         label="菜品图片"
-        value={product.img_url}
+        value={product.imgUrl}
+        maxCount={1}
       />
       <ProFormText
         width="md"

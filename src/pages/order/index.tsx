@@ -5,21 +5,23 @@ import {
   ProColumns,
   TableDropdown,
 } from '@ant-design/pro-components';
-import { Button, Input, message } from 'antd';
+import { Button, Input, Space, Tag, message } from 'antd';
 import { useRef, useState } from 'react';
-import { addAccess, deleteAccess, modifyAccess, queryAccessList } from '../../api/AccessController';
+import { addOrder, deleteOrder, modifyOrder, queryOrderList } from '../../api/OrderController';
 import { MySelect } from '../../components/MySelect';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
+import { useFetch } from '../../hook/useFetch';
+import { queryProductList } from '../../api/ProductController';
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.AccessInfo) => {
+const handleAdd = async (fields: any) => {
   const hide = message.loading('正在添加');
   try {
-    await addAccess({ ...fields });
+    await addOrder({ ...fields });
     hide();
     message.success('添加成功');
     return true;
@@ -34,11 +36,11 @@ const handleAdd = async (fields: API.AccessInfo) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: API.AccessInfo) => {
+const handleUpdate = async (fields: any) => {
   console.log('fields: ', fields);
   const hide = message.loading('正在配置');
   try {
-    await modifyAccess(
+    await modifyOrder(
       {
         id: fields.id || '',
       },
@@ -61,12 +63,12 @@ const handleUpdate = async (fields: API.AccessInfo) => {
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.AccessInfo[]) => {
+const handleRemove = async (selectedRows: any[]) => {
   console.log('selectedRows: ', selectedRows);
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await deleteAccess({
+    await deleteOrder({
       id: selectedRows.find((row) => row.id)?.id || '',
     });
     hide();
@@ -79,15 +81,16 @@ const handleRemove = async (selectedRows: API.AccessInfo[]) => {
   }
 };
 
-const AccessPage = () => {
+const OrderPage = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});
+  const { data: { list: productList = [] } }: any = useFetch(queryProductList);
   const actionRef = useRef<ActionType>();
-  const columns: ProColumns<API.AccessInfo>[] = [
+  const columns: ProColumns<any>[] = [
     {
-      title: '权限id',
+      title: 'id',
       dataIndex: 'id',
       tip: 'id是唯一的 key',
       search: false,
@@ -96,13 +99,60 @@ const AccessPage = () => {
       }
     },
     {
-      title: '模版名称',
-      dataIndex: 'moduleName',
+      title: '订单id',
+      dataIndex: 'orderId',
+      valueType: 'text',
+      hideInForm: true,
+    },
+    {
+      title: '桌号',
+      dataIndex: 'tableId',
       valueType: 'text',
     },
     {
-      title: '节点类型',
-      dataIndex: 'type',
+      title: '用餐人数',
+      dataIndex: 'pNum',
+      valueType: 'text',
+    },
+    {
+      title: '备注口味信息',
+      dataIndex: 'pMark',
+      valueType: 'text',
+    },
+    {
+      title: '菜品信息',
+      dataIndex: 'orderItems',
+      valueType: 'checkbox',
+      fieldProps: {
+        fieldNames: {
+          label: 'title',
+          value: 'id',
+        },
+        options: productList,
+      },
+      render: (_, record) => (
+        <Space>
+          {record.orderItems.map(({ productTitle, color }: any) => (
+            <Tag color={color} key={productTitle}>
+              {productTitle}
+            </Tag>
+          ))}
+        </Space>
+      ),
+    },
+    {
+      title: '总价格',
+      dataIndex: 'totalPrice',
+      valueType: 'text',
+    },
+    {
+      title: '总数量',
+      dataIndex: 'totalNum',
+      valueType: 'text',
+    },
+    {
+      title: '支付方式',
+      dataIndex: 'payType',
       // valueEnum: {
       //   1: { text: '模块', status: '1' },
       //   2: { text: '菜单', status: '2' },
@@ -111,9 +161,8 @@ const AccessPage = () => {
       valueType: 'select',
       fieldProps: {
         options: [
-          { label: '模块', value: 1 },
-          { label: '菜单', value: 2 },
-          { label: '操作', value: 3 },
+          { label: '支付宝支付', value: 1 },
+          { label: '微信支付', value: 2 },
         ]
       },
       renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
@@ -134,33 +183,21 @@ const AccessPage = () => {
           />
         );
       },
+      hideInForm: true,
     },
     {
-      title: '操作名称',
-      dataIndex: 'actionName',
-      valueType: 'text',
-    },
-    {
-      title: '跳转地址',
-      dataIndex: 'url',
-      valueType: 'text',
-    },
-    {
-      title: '模块id',
-      dataIndex: 'moduleId',
-      valueType: 'text',
-    },
-    {
-      title: '排序',
-      dataIndex: 'sort',
+      title: '支付状态',
+      dataIndex: 'payStatus',
       valueType: 'text',
       search: false,
+      hideInForm: true,
     },
     {
-      title: '状态',
-      dataIndex: 'status',
+      title: '订单状态',
+      dataIndex: 'orderStatus',
       valueType: 'text',
       search: false,
+      hideInForm: true,
     },
     {
       title: '增加时间',
@@ -204,10 +241,10 @@ const AccessPage = () => {
   return (
     <PageContainer
       header={{
-        title: '权限管理',
+        title: '订单管理',
       }}
     >
-      <ProTable<API.AccessInfo>
+      <ProTable<any>
         headerTitle="查询表格"
         actionRef={actionRef}
         rowKey="id"
@@ -224,7 +261,7 @@ const AccessPage = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          return await queryAccessList({
+          return await queryOrderList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
@@ -242,7 +279,7 @@ const AccessPage = () => {
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
       >
-        <ProTable<API.AccessInfo, API.AccessInfo>
+        <ProTable<any, any>
           onSubmit={async (value: any) => {
             const success = await handleAdd(value);
             if (success) {
@@ -257,8 +294,11 @@ const AccessPage = () => {
           columns={columns.filter((item) => item.dataIndex !== 'id')}
           form={{
             initialValues: {
-              sort: 100,
-              status: "1",
+              tableId: 1,
+              pNum: 5,
+              pMark: '不要辣椒',
+              totalPrice: 100,
+              totalNum: 2,
             },
             submitter: {
               resetButtonProps: {
@@ -295,4 +335,4 @@ const AccessPage = () => {
   );
 }
 
-export default AccessPage
+export default OrderPage

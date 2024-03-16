@@ -52,28 +52,28 @@ export const ProductPage = () => {
     },
     {
       title: '菜品分类',
-      dataIndex: 'pro_cat',
+      dataIndex: 'proCat',
       valueType: 'text',
       render: (_, row) => {
         // console.log('row: ', row);
-        return row.pro_cat?.title || '-'
+        return row.proCat?.title || '-'
       }
     },
     {
       title: '菜品图片',
-      dataIndex: 'image',
+      dataIndex: 'imgUrl',
       key: 'image',
       valueType: 'image',
-      render: (_, row) => {
-        // console.log(row)
-        return row.img_url.map((el: any) => (
-          <Image
-            width={80}
-            src={el.url}
-            key={el.uid}
-          />
-        ))
-      },
+      // render: (_, row) => {
+      //   // console.log(row)
+      //   return row.img_url.map((el: any) => (
+      //     <Image
+      //       width={80}
+      //       src={el.url}
+      //       key={el.uid}
+      //     />
+      //   ))
+      // },
     },
 
     {
@@ -92,7 +92,7 @@ export const ProductPage = () => {
     },
     {
       title: '推荐',
-      dataIndex: 'is_best',
+      dataIndex: 'isBest',
       valueType: 'text',
       render: (_, record) => (
         record.is_best ? <Space>
@@ -107,7 +107,7 @@ export const ProductPage = () => {
     },
     {
       title: '热销',
-      dataIndex: 'is_hot',
+      dataIndex: 'isHot',
       valueType: 'text',
       render: (_, record) => (
         record.is_hot ? <Space>

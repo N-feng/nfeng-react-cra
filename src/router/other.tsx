@@ -1,5 +1,6 @@
 import Layout from "../layouts";
 import ErrorPage from "../pages/error-page";
+import OrderPage from "../pages/order";
 import { SettingPage } from "../pages/setting";
 import { SettingCreate } from "../pages/setting/components/CreateForm";
 import { SettingUpdate, settingLoader,  } from "../pages/setting/components/UpdateForm";
@@ -13,6 +14,10 @@ export const OtherRoute = {
     {
       path: "table",
       element: <TablePage />,
+    },
+    {
+      path: "order",
+      element: <OrderPage />,
     },
     {
       path: "setting/list",

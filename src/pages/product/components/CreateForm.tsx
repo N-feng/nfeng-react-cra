@@ -113,8 +113,9 @@ export const ProductCreate = () => {
           placeholder="请输入名称"
         /> */}
         <ImageUpload 
-          name="img_url" 
-          label="菜品图片" 
+          name="img_url"
+          label="菜品图片"
+          maxCount={1}
         />
         <ProFormText
           width="md"

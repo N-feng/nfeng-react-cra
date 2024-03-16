@@ -66,7 +66,7 @@ export const SettingPage = () => {
       valueType: 'image',
       render: (_, row) => {
         // console.log(row)
-        return row.img_url.map((el: any) => (
+        return row.imgUrl.map((el: any) => (
           <Image
             width={80}
             src={el.url}

@@ -11,8 +11,10 @@ export const ImageUpload: React.FC<{
   label?: string;
   name?: string;
   onChange?: (value: string) => void;
+  maxCount?: number;
+  max?: number;
 }> = (props) => {
-  // console.log('props: ', props);
+  console.log('props: ', props);
 
   const action = `${baseURL}/product/upload`
   const token = getToken()
@@ -26,8 +28,9 @@ export const ImageUpload: React.FC<{
         defaultFileList: props.value,
         headers: {
           Authorization: token && `Bearer ${token}`
-        }
+        },
       }}
+      max={props.max || props.maxCount}
     />
   )
 }
