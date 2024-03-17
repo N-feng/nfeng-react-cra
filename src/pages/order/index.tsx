@@ -124,19 +124,27 @@ const OrderPage = () => {
       dataIndex: 'orderItems',
       valueType: 'checkbox',
       fieldProps: {
-        fieldNames: {
-          label: 'title',
-          value: 'id',
-        },
-        options: productList,
+      //   fieldNames: {
+      //     label: 'title',
+      //     value: 'id',
+      //   },
+        options: productList.map((item: any) => {
+          return {
+            ...item,
+            label: item.title,
+            value: item.id,
+          }
+        }),
       },
       render: (_, record) => (
         <Space>
-          {record.orderItems.map(({ productTitle, color }: any) => (
-            <Tag color={color} key={productTitle}>
-              {productTitle}
-            </Tag>
-          ))}
+          {record.orderItems.map(({ productTitle: name, color, id }: any) => {
+            return (
+              <Tag color={color} key={id}>
+                {name}
+              </Tag>
+            )
+          })}
         </Space>
       ),
     },
