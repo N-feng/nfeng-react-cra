@@ -89,7 +89,7 @@ export const TablePage = () => {
     {
       title: '桌号id',
       dataIndex: 'id',
-      tip: 'id是唯一的 key',
+      tooltip: 'id是唯一的 key',
       search: false,
       fieldProps: {
         disabled: true,

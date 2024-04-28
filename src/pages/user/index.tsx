@@ -97,7 +97,7 @@ const UserPage = () => {
     {
       title: '用户ID',
       dataIndex: 'id',
-      tip: 'ID是唯一的 key',
+      tooltip: 'ID是唯一的 key',
       fieldProps: {
         disabled: true,
       }

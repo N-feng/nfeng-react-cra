@@ -92,7 +92,7 @@ const OrderPage = () => {
     {
       title: 'id',
       dataIndex: 'id',
-      tip: 'id是唯一的 key',
+      tooltip: 'id是唯一的 key',
       search: false,
       fieldProps: {
         disabled: true,

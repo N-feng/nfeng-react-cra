@@ -183,7 +183,7 @@ const App: React.FC<TableTransProps> = (props: any) => {
           targetKeys={targetKeys}
           disabled={disabled}
           showSearch={showSearch}
-          onChange={onChange}
+          // onChange={onChange}
           filterOption={filterOption}
           leftColumns={leftTableColumns}
           rightColumns={rightTableColumns}

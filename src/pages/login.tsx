@@ -48,7 +48,7 @@ const Page = () => {
     },
   ];
   const [messageApi, contextHolder] = message.useMessage();
-  const [img, setImg] = useState(`${baseURL}/captcha`);
+  const [img, setImg] = useState(`${baseURL}/admin/captcha`);
   return (
     <div
       style={{
@@ -232,7 +232,7 @@ const Page = () => {
                   id="verify_img" 
                   src={img} 
                   title="看不清？点击刷新" 
-                  onClick={() => setImg(`${baseURL}/captcha?mt=${Math.random()}`)} 
+                  onClick={() => setImg(`${baseURL}/admin/captcha?mt=${Math.random()}`)} 
                   alt='captcha' 
                 />
               </Flex>
