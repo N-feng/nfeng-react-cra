@@ -21,7 +21,6 @@ import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { login } from '../api/AuthController';
-import { baseURL } from '../utils/request';
 
 type LoginType = 'phone' | 'account';
 
@@ -48,7 +47,7 @@ const Page = () => {
     },
   ];
   const [messageApi, contextHolder] = message.useMessage();
-  const [img, setImg] = useState(`${baseURL}/admin/captcha`);
+  const [img, setImg] = useState(`/api-admin/captcha?mt=${Math.random()}`);
   return (
     <div
       style={{
@@ -232,7 +231,7 @@ const Page = () => {
                   id="verify_img" 
                   src={img} 
                   title="看不清？点击刷新" 
-                  onClick={() => setImg(`${baseURL}/admin/captcha?mt=${Math.random()}`)} 
+                  onClick={() => setImg(`/api-admin/captcha?mt=${Math.random()}`)} 
                   alt='captcha' 
                 />
               </Flex>
