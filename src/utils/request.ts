@@ -4,7 +4,7 @@ import { errorHandler, responseHandler } from './errorHandle'
 
 const UMI_APP_API_URL = process.env.UMI_APP_API_URL
 
-export const baseURL = `${UMI_APP_API_URL || ''}`
+export const baseURL = `${UMI_APP_API_URL || ''}/api`
 
 export const getToken = () => {
   return localStorage.getItem("token") as string
@@ -15,8 +15,8 @@ const config: AxiosRequestConfig = {
   timeout: 60000
 }
 
-export const AuthAxios = axios.create({ ...config, baseURL: `${baseURL}/api-admin` })
-export const PublicAxios = axios.create({ ...config, baseURL: `${baseURL}/api-server`})
+export const AuthAxios = axios.create({ ...config, baseURL: `${baseURL}/admin` })
+export const PublicAxios = axios.create({ ...config, baseURL: `${baseURL}/server`})
 
 AuthAxios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
